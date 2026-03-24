@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendamento de Serviços</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/servicos.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+</head>
+<body>
+
+    <header class="topo">
+        <a href="index.html" class="voltar">
+        <i class="fa-solid fa-arrow-left"></i>
+        </a>
+
+        <h1>Agendamento de Serviços</h1>
+
+        <h2 id="boasVindas"></h2>
+
+        
+
+    </header>
+
+    <section class="servicos">
+        <h3>Serviços</h3>
+
+        <div class="card-servico ativo" data-preco="20">
+            <img src="img/corte_1.jpeg" alt="corte_1">
+
+            <div class="info">
+                <h3>Corte Social</h3>
+                <p>30 min • R$ 20,00</p>
+            </div>
+
+            <!--estrutura do circulo para selecionar o serviço-->
+            <div class="radio"></div>
+        </div>
+
+        <div class="card-servico" data-preco="25">
+            <img src="img/corte_2.jpeg" alt="corte_2">
+
+            <div class="info">
+                <h3>Degradê</h3>
+                <p>50 min • R$ 25,00</p>
+            </div>
+
+            <div class="radio"></div>
+        </div>
+
+        <div class="card-servico" data-preco="40">
+            <img src="img/corte_3.jpeg" alt="corte_3">
+
+            <div class="info">
+                <h3>Barba e Cabelo</h3>
+                <p>50 min • R$ 40,00</p>
+            </div>
+
+            <div class="radio"></div>
+        </div>
+
+    </section>
+
+    <section class="horarios">
+
+        <section class="datas">
+
+            <h3>Data e Horário</h3>
+
+            <div class="regua-datas" id="reguaDatas">
+
+                <!-- dias serão inseridos pelo javascript -->
+
+                <button class="abrir-calendario" id="abrirCalendario">
+                📅
+                </button>
+
+            </div>
+
+            <input type="date" id="seletorData" class="input-calendario">
+
+        </section>
+
+
+        <div class="periodo-manha">
+
+            <p class="titulo-periodo">MANHÃ</p>
+
+            <div class="horas">
+                <button class="hora desabilitado">09:00</button>
+                <button class="hora">09:30</button>
+                <button class="hora">10:00</button>
+                <button class="hora">10:30</button>
+            </div>
+
+        </div>
+        
+
+        <div class="periodo-tarde">
+
+            <p class="titulo-periodo">TARDE</p>
+
+            <div class="horas">
+                <button class="hora">13:00</button>
+                <button class="hora ativo">13:30</button>
+                <button class="hora">14:00</button>
+                <button class="hora">14:30</button>
+            </div>
+
+        </div>
+
+
+    </section>
+
+    <footer>
+
+        <div class="confirmacao">
+            <div class="total">
+                <span>Total estimado</span>
+                <h3 id="total">R$ 20,00</h3>
+            </div>
+
+
+            <button id="confirmar">
+                Confirmar Agendamento
+                <span id="resumoHorario"></span>
+                <i class="fa-solid fa-arrow-right"></i>
+                
+            </button>
+        </div>
+
+    </footer>
+
+    <!--Conecatar o site ao Supabase-->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="js/servicos.js"></script>
+</body>
+</html>

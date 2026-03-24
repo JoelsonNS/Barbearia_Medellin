@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/index.css">
+
+    <!-- Biblioteca de ícones -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <header>
+        <!-- Nome da barbearia -->
+        <h1>Medellin Barbearia</h1>
+    </header>
+
+    <!-- ===== HERO SECTION ===== -->
+    <section class="hero">
+
+        <!-- Badge aberto -->
+        <span class="status">ABERTO AGORA</span>
+
+        <!-- Título principal -->
+        <h2>Renove seu Estilo,<br>Eleve sua Confiança</h2>
+
+        <!-- Descrição -->
+        <p>
+            Cortes modernos, barbas impecáveis e
+            um ambiente premium feito para você.
+        </p>
+
+        <!-- Botão -->
+        <button id="hero_agendar_Btn">
+            <i class="fa-solid fa-calendar" aria-label="Calendário"></i>
+            Agendar Horário
+        </button>
+
+    </section>
+
+    <!-- ===== TRABALHOS ===== -->
+    <section class="trabalhos">
+
+        <h2>Nossos Trabalhos</h2>
+        <br>
+        <p>Transformamos estilo em identidade.</p>
+
+        <div class="galeria">
+
+            <!-- Imagens -->
+            <img src="img/corte_1.jpeg" alt="corte 1" class="foto">
+            <img src="img/corte_2.jpeg" alt="corte 2" class="foto">
+            <img src="img/corte_3.jpeg" alt="corte 3" class="foto">
+        </div>
+
+            <!--Botão garantir corte -->
+        <div class="cta-trabalhos">
+            <button id="btn_garantir_corte" class="btn-discreto">
+                Garanta seu corte hoje
+                <i class="fa-solid fa-arrow-right" aria-label="Seta a direita"></i>
+            </button>
+        </div>
+
+        
+    </section>
+
+    <!--Modal-->
+    <div id="modal" class="modal">
+        <span class="fechar_foto" id="fechar">&times;</span>
+        <img class="modal_imagens" id="modal-img">
+
+        <span class="seta esquerda" id="anterior">&#10094;</span>
+        <span class="seta direita" id="proximo">&#10095;</span>
+    </div>
+
+    <!-- ===== REDES SOCIAIS ===== -->
+    <div class="social">
+
+            <button id="social_btn_google_maps">
+                <i class="fa-solid fa-location-dot" aria-label="Mapa"></i>
+            </button>
+
+            <button id="social_btn_instagram">
+                <i class="fa-brands fa-instagram" aria-label="Instagram"></i>
+            </button>
+
+            <button id="social_btn_Google_Empresa">
+                <i class="fa-solid fa-store" aria-label="Loja"></i>
+            </button>
+
+            <button id="social_btn_whatsapp">
+                <i class="fa-brands fa-whatsapp" aria-label="Whatsapp"></i>
+            </button>
+
+        </div>
+
+    <!-- ===== LOCALIZAÇÃO ===== -->
+    <section class="info">
+
+        <div class="card">
+            <i class="fa-solid fa-location-dot" aria-label="Endereço"></i>
+
+            <div>
+                <h3>Localização</h3>
+                <p>Rua Ana Rosa, 512 A - Maurício de Nassau, Caruaru - PE</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <i class="fa-solid fa-clock" aria-label="Relógio"></i>
+
+            <div>
+                <h3>Horário de Funcionamento</h3>
+                <p>Seg - Sáb: 08:00 - 19:00</p>
+            </div>
+        </div>
+
+    </section>
+
+
+    <!-- POPUP AGENDAMENTO -->
+    <div id="popupNome" class="popup-overlay">
+        
+        <div class="popup-box">
+
+            <span id="fecharPopup" class="fechar-popup">&times;</span>
+
+            <h2>Escreva seu nome abaixo para prosseguiros com o agendamento</h2>
+
+            <p>
+                Assim garantimos um atendimento àgil e personalizado.
+            </p>
+
+            <form id="formNome">
+                <input type="text" id="inputNomeCliente" placeholder="Digite seu nome" required>
+
+                <button type= "submit" id="btnEnviarNome">
+                    Enviar e Prosseguir Agendamento
+                </button>
+            </form>
+            
+        </div>
+
+    </div>
+    
+    
+    <footer>
+
+        <p class="footer_copy">&copy;2026 by Genys</p>
+
+    </footer>
+
+    <!-- Arquivo JS -->
+    <script src="js/index.js"></script>
+
+</body>
+</html>
