@@ -12,47 +12,49 @@ if(nomeCliente){
 
 //Quando for feito o deploy (na Vercel ou Netlify), existe uma aba chamada "Environment Variables". Lá, será cadastrado manualmente as chaves que estão no arquivo .env que se encontra na raiz da pasta do projeto.
 
-const { createClient } = supabase
+//const { createClient } = supabase
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseKey = import.meta.env.VITE_SUPABASE_KEY
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
 
+//Aqui liga o site ao banco de dados, usando a URL e a Chave.
 const db = supabase.createClient(supabaseUrl, supabaseKey)
 
 //Salvar o agendamento no banco de dados
 async function salvarAgendamento(servico, data, hora, cliente){
 
 //Verificar se o horário já foi agendado
-const { data: existente } = await db
+const { data: existente, error: erroBusca } = await db
 .from("agendamentos")
 .select("*")
-.eq("data", data)
+.eq("dados", data)
 .eq("hora", hora)
 
 //Se já existir um agendamento no mesmo horário
-if(existente.length > 0){
-    alert("Este horário já foi agendado")
-    return false
+if(existente && existente.length > 0){
+    alert("Este horário já foi agendado por outra pessoa.")
+    return false;
 }
 
 //Salvar no banco
 const { error } = await db
 .from("agendamentos")
 .insert([
-{
-servico: servico,
-data: data,
-hora: hora,
-cliente: cliente
-}
+    {
+        servico: servico,
+        dados: data,
+        hora: hora,
+        cliente: cliente
+    }
 ])
 
 if(error){
-    alert("Este horário acabou de ser reservado por outro cliente.")
-    return false
+    console.error("Erro real do Supabase:", error); // Isso vai te dizer exatamente o que houve
+    alert("Erro ao salvar: " + error.message);
+    return false;
 }
 
-return true
+return true;
 }
 
 
@@ -67,7 +69,7 @@ async function carregarHorariosOcupados(dataSelecionada){
     const { data, error } = await db
     .from("agendamentos")
     .select("hora")
-    .eq("data", dataSelecionada)
+    .eq("dados", dataSelecionada)
 
     //Se ocorrer erro na consulta
     if(error){
@@ -232,6 +234,22 @@ horarios.forEach(hora => {
 
 })
 
+/*==== SELEÇÃO DE SERVIÇOS ====*/
+
+const servicos = document.querySelectorAll(".card-servico")
+
+    servicos.forEach( servico => {
+
+        servico.addEventListener("click", ()=> {
+            //remove a seleção de todos
+            servicos.forEach(s => s.classList.remove("ativo"))
+
+            //adiciona no clicado
+            servico.classList.add("ativo")
+        })
+    })
+
+
 
 
 /* === RESUMO DO HORÁRIO E VALOR ESCOLHIDO === */ 
@@ -268,20 +286,11 @@ carregarHorariosOcupados(dataSelecionada)
 })
 
 
-/*== CARREGAR NOME DO CLIENTE SALVO NO NAVEGADOR ==*/
-window.addEventListener("DOMContentLoaded", () => {
-
-const nomeSalvo = localStorage.getItem("nomeCliente")
-
-if(nomeSalvo){
-document.getElementById("nomeCliente").value = nomeSalvo
-}
-
-})
-
-
 /*==BOTÃO CONFIRMAR AGENDAMENTO==*/
 const confirmar = document.getElementById("confirmar")
+
+    //Buscam o nome atualizado do localStorage no momento do clique
+    const nomeAtual = localStorage.getItem("nomeCliente");
 
 confirmar.addEventListener("click", async () => {
 
@@ -294,14 +303,10 @@ confirmar.addEventListener("click", async () => {
     //Pegar horário selecionado
     const horaAtiva = document.querySelector(".hora.ativo")
 
-    //Salvar nome no navegador
-    localStorage.setItem("nomeCliente", nomeCliente)
-
-
     //Verificação de segurança
-    if(!servicoSelecionado || !diaAtivo || !horaAtiva || !nomeCliente){
-    alert("Preencha nome, serviço, dia e horário")
-    return
+    if(!servicoSelecionado || !diaAtivo || !horaAtiva || !nomeAtual){
+    alert("Por favor, selecione o serviço, o dia e o horário antes de confirmar.")
+    return;
 }
 
 
