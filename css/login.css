@@ -1,0 +1,321 @@
+@charset "UTF-8";
+
+:root {
+    --page-bg: #08111f;
+    --panel-bg: #0d1728;
+    --card-bg: #101b2f;
+    --card-border: #1f2e47;
+    --primary: #3b82f6;
+    --primary-dark: #1d4ed8;
+    --primary-soft: rgba(59, 130, 246, 0.16);
+    --text-main: #f8fafc;
+    --text-muted: #9aa7bc;
+    --input-bg: #0a1324;
+    --danger: #f87171;
+    --success: #60a5fa;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at top left, rgba(59, 130, 246, 0.22), transparent 32rem),
+        linear-gradient(135deg, #050b16 0%, var(--page-bg) 45%, #0d1728 100%);
+    color: var(--text-main);
+    font-family: Arial, sans-serif;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.login-page {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(380px, 0.95fr);
+    min-height: 100vh;
+}
+
+.brand-panel {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    min-height: 100%;
+    padding: 48px;
+    overflow: hidden;
+    background:
+        linear-gradient(180deg, rgba(5, 11, 22, 0.18), rgba(5, 11, 22, 0.92)),
+        url("../img/frente_da_barbearia.jpeg") center/cover;
+}
+
+.brand-panel::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(8, 17, 31, 0.2), rgba(8, 17, 31, 0.88));
+}
+
+.back-link,
+.brand-content {
+    position: relative;
+    z-index: 1;
+}
+
+.back-link {
+    position: absolute;
+    top: 36px;
+    left: 36px;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 16px;
+    background: rgba(8, 17, 31, 0.5);
+    backdrop-filter: blur(8px);
+}
+
+.brand-content {
+    max-width: 620px;
+}
+
+.system-badge,
+.eyebrow {
+    color: var(--primary);
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.system-badge {
+    display: inline-flex;
+    padding: 8px 14px;
+    border: 1px solid rgba(96, 165, 250, 0.35);
+    border-radius: 999px;
+    background: rgba(8, 17, 31, 0.62);
+}
+
+.brand-content h1 {
+    margin-top: 22px;
+    font-size: clamp(2.8rem, 7vw, 5.8rem);
+    line-height: 0.95;
+}
+
+.brand-content p {
+    max-width: 520px;
+    margin-top: 22px;
+    color: #d7deeb;
+    font-size: 1.08rem;
+    line-height: 1.7;
+}
+
+.login-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: min(100%, 520px);
+    margin: auto;
+    padding: 42px;
+}
+
+.login-header {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    margin-bottom: 34px;
+}
+
+.icon-box {
+    display: grid;
+    place-items: center;
+    width: 62px;
+    height: 62px;
+    border-radius: 20px;
+    background: var(--primary-soft);
+    color: var(--primary);
+    font-size: 1.45rem;
+}
+
+.login-header h2 {
+    margin-top: 6px;
+    font-size: clamp(2rem, 5vw, 3rem);
+    line-height: 1;
+}
+
+.login-form {
+    display: grid;
+    gap: 12px;
+    padding: 28px;
+    border: 1px solid var(--card-border);
+    border-radius: 28px;
+    background: rgba(16, 27, 47, 0.82);
+    box-shadow: 0 22px 70px rgba(0, 0, 0, 0.32);
+}
+
+.login-form label {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+.input-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 58px;
+    margin-bottom: 8px;
+    padding: 0 16px;
+    border: 1px solid transparent;
+    border-radius: 18px;
+    background: var(--input-bg);
+    color: var(--text-muted);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input-group:focus-within {
+    border-color: rgba(96, 165, 250, 0.62);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+}
+
+.input-group input {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--text-main);
+    font: inherit;
+}
+
+.input-group input::placeholder {
+    color: #64748b;
+}
+
+.input-group button {
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    margin: 6px 0 4px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.remember {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-options a {
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.login-message {
+    min-height: 20px;
+    color: var(--danger);
+    font-size: 0.92rem;
+}
+
+.login-message.success {
+    color: var(--success);
+}
+
+.login-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-height: 58px;
+    border: none;
+    border-radius: 18px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.login-button:hover {
+    filter: brightness(1.08);
+    transform: translateY(-2px);
+}
+
+.admin-note {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    margin-top: 24px;
+    padding: 18px;
+    border: 1px solid rgba(96, 165, 250, 0.2);
+    border-radius: 22px;
+    background: rgba(59, 130, 246, 0.08);
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+.admin-note i {
+    margin-top: 4px;
+    color: var(--primary);
+}
+
+@media (max-width: 860px) {
+    .login-page {
+        grid-template-columns: 1fr;
+    }
+
+    .brand-panel {
+        min-height: 360px;
+        padding: 94px 24px 34px;
+    }
+
+    .brand-panel::after {
+        background: linear-gradient(180deg, rgba(8, 17, 31, 0.15), rgba(8, 17, 31, 0.9));
+    }
+
+    .back-link {
+        top: 24px;
+        left: 24px;
+    }
+
+    .login-card {
+        padding: 32px 18px 42px;
+    }
+}
+
+@media (max-width: 520px) {
+    .brand-content h1 {
+        font-size: 2.6rem;
+    }
+
+    .brand-content p {
+        font-size: 0.98rem;
+    }
+
+    .login-header {
+        align-items: flex-start;
+    }
+
+    .login-form {
+        padding: 20px;
+        border-radius: 24px;
+    }
+
+    .form-options {
+        flex-direction: column;
+    }
+}
