@@ -1,321 +1,200 @@
-@charset "UTF-8";
-
-:root {
-    --page-bg: #08111f;
-    --panel-bg: #0d1728;
-    --card-bg: #101b2f;
-    --card-border: #1f2e47;
-    --primary: #3b82f6;
-    --primary-dark: #1d4ed8;
-    --primary-soft: rgba(59, 130, 246, 0.16);
-    --text-main: #f8fafc;
-    --text-muted: #9aa7bc;
-    --input-bg: #0a1324;
-    --danger: #f87171;
-    --success: #60a5fa;
-}
-
+/* Reset básico para remover espaçamentos padrão do navegador */
 * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
+/* Estilo geral da página: fonte, altura mínima e fundo escuro */
 body {
-    min-height: 100vh;
-    background:
-        radial-gradient(circle at top left, rgba(59, 130, 246, 0.22), transparent 32rem),
-        linear-gradient(135deg, #050b16 0%, var(--page-bg) 45%, #0d1728 100%);
-    color: var(--text-main);
-    font-family: Arial, sans-serif;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  color: #ffffff;
+  background: radial-gradient(
+    circle at top,
+    #12213f 0%,
+    #09111f 45%,
+    #07101c 100%
+  );
 }
 
-a {
-    color: inherit;
-    text-decoration: none;
-}
-
+/* Container principal responsável por centralizar o conteúdo na tela */
 .login-page {
-    display: grid;
-    grid-template-columns: minmax(0, 1.05fr) minmax(380px, 0.95fr);
-    min-height: 100vh;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 32px 20px;
 }
 
-.brand-panel {
-    position: relative;
-    display: flex;
-    align-items: flex-end;
-    min-height: 100%;
-    padding: 48px;
-    overflow: hidden;
-    background:
-        linear-gradient(180deg, rgba(5, 11, 22, 0.18), rgba(5, 11, 22, 0.92)),
-        url("../img/frente_da_barbearia.jpeg") center/cover;
+/* Caixa central que limita a largura da interface */
+.login-box {
+  width: 100%;
+  max-width: 620px;
+  text-align: center;
 }
 
-.brand-panel::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(90deg, rgba(8, 17, 31, 0.2), rgba(8, 17, 31, 0.88));
+/* Bloco da identidade visual no topo da tela */
+.brand {
+  margin-bottom: 44px;
 }
 
-.back-link,
-.brand-content {
-    position: relative;
-    z-index: 1;
+/* Círculo que exibe o ícone principal */
+.brand-icon {
+  width: 124px;
+  height: 124px;
+  margin: 0 auto 24px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #122750;
+  color: #4f8cff;
+  font-size: 58px;
 }
 
-.back-link {
-    position: absolute;
-    top: 36px;
-    left: 36px;
-    display: grid;
-    place-items: center;
-    width: 48px;
-    height: 48px;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    border-radius: 16px;
-    background: rgba(8, 17, 31, 0.5);
-    backdrop-filter: blur(8px);
+/* Texto secundário acima do nome da marca */
+.brand-subtitle {
+  margin-bottom: 16px;
+  color: #8c97b3;
+  font-size: 18px;
+  letter-spacing: 5px;
 }
 
-.brand-content {
-    max-width: 620px;
+/* Título principal da marca */
+.brand-title {
+  font-size: 58px;
+  font-weight: 700;
+  color: #f5f7ff;
 }
 
-.system-badge,
-.eyebrow {
-    color: var(--primary);
-    font-size: 0.78rem;
-    font-weight: 800;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-}
-
-.system-badge {
-    display: inline-flex;
-    padding: 8px 14px;
-    border: 1px solid rgba(96, 165, 250, 0.35);
-    border-radius: 999px;
-    background: rgba(8, 17, 31, 0.62);
-}
-
-.brand-content h1 {
-    margin-top: 22px;
-    font-size: clamp(2.8rem, 7vw, 5.8rem);
-    line-height: 0.95;
-}
-
-.brand-content p {
-    max-width: 520px;
-    margin-top: 22px;
-    color: #d7deeb;
-    font-size: 1.08rem;
-    line-height: 1.7;
-}
-
-.login-card {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    width: min(100%, 520px);
-    margin: auto;
-    padding: 42px;
-}
-
-.login-header {
-    display: flex;
-    gap: 18px;
-    align-items: center;
-    margin-bottom: 34px;
-}
-
-.icon-box {
-    display: grid;
-    place-items: center;
-    width: 62px;
-    height: 62px;
-    border-radius: 20px;
-    background: var(--primary-soft);
-    color: var(--primary);
-    font-size: 1.45rem;
-}
-
-.login-header h2 {
-    margin-top: 6px;
-    font-size: clamp(2rem, 5vw, 3rem);
-    line-height: 1;
-}
-
+/* Card do formulário com borda, fundo e espaçamento interno */
 .login-form {
-    display: grid;
-    gap: 12px;
-    padding: 28px;
-    border: 1px solid var(--card-border);
-    border-radius: 28px;
-    background: rgba(16, 27, 47, 0.82);
-    box-shadow: 0 22px 70px rgba(0, 0, 0, 0.32);
+  padding: 38px 34px 30px;
+  border: 1px solid #22314f;
+  border-radius: 24px;
+  background: rgba(12, 20, 36, 0.9);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02);
 }
 
-.login-form label {
-    color: var(--text-muted);
-    font-size: 0.95rem;
-    font-weight: 700;
+/* Espaçamento entre cada grupo de campo */
+.form-group {
+  margin-bottom: 32px;
+  text-align: left;
 }
 
-.input-group {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    min-height: 58px;
-    margin-bottom: 8px;
-    padding: 0 16px;
-    border: 1px solid transparent;
-    border-radius: 18px;
-    background: var(--input-bg);
-    color: var(--text-muted);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+/* Estilo padrão dos rótulos dos campos */
+.form-group label {
+  display: block;
+  margin-bottom: 14px;
+  color: #98a3bd;
+  font-size: 18px;
+  font-weight: 600;
 }
 
-.input-group:focus-within {
-    border-color: rgba(96, 165, 250, 0.62);
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+/* Linha que alinha o título da senha e o link "Esqueceu a senha?" */
+.label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 14px;
 }
 
-.input-group input {
-    width: 100%;
-    border: none;
-    outline: none;
-    background: transparent;
-    color: var(--text-main);
-    font: inherit;
+.label-row label {
+  margin-bottom: 0;
 }
 
-.input-group input::placeholder {
-    color: #64748b;
+.forgot-password {
+  color: #4f8cff;
+  text-decoration: none;
+  font-size: 16px;
 }
 
-.input-group button {
-    border: none;
-    background: transparent;
-    color: var(--text-muted);
-    cursor: pointer;
-    font-size: 1rem;
+/* Caixa visual que agrupa ícone e input */
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 22px;
+  border: 1px solid #22314f;
+  border-radius: 16px;
+  background-color: #091321;
 }
 
-.form-options {
-    display: flex;
-    justify-content: space-between;
-    gap: 16px;
-    margin: 6px 0 4px;
-    color: var(--text-muted);
-    font-size: 0.9rem;
+/* Ícones dos campos */
+.input-icon {
+  color: #6f7d9d;
+  font-size: 20px;
+  line-height: 1;
 }
 
-.remember {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
+/* Campo digitável com aparência integrada ao card */
+.input-wrapper input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #dde6ff;
+  font-size: 18px;
 }
 
-.form-options a {
-    color: var(--primary);
-    font-weight: 700;
+.input-wrapper input::placeholder {
+  color: #4d5c79;
 }
 
-.login-message {
-    min-height: 20px;
-    color: var(--danger);
-    font-size: 0.92rem;
-}
-
-.login-message.success {
-    color: var(--success);
-}
-
+/* Botão principal de ação da tela */
 .login-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    min-height: 58px;
-    border: none;
-    border-radius: 18px;
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-    color: #fff;
-    font-size: 1rem;
-    font-weight: 800;
-    cursor: pointer;
-    transition: transform 0.2s ease, filter 0.2s ease;
+  margin-top: 60px;
+  width: 100%;
+  padding: 5px;
+  border: none;
+  border-radius: 16px;
+  background: #2563eb;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    filter 0.2s ease;
 }
 
+/* Efeito visual ao passar o mouse no botão */
 .login-button:hover {
-    filter: brightness(1.08);
-    transform: translateY(-2px);
+  transform: translateY(-2px);
+  filter: brightness(1.05);
 }
 
-.admin-note {
-    display: flex;
-    gap: 14px;
+.login-button span {
+  margin-left: 14px;
+  font-size: 28px;
+}
+
+/* Texto inferior com chamada para suporte */
+.support-text {
+  margin-top: 34px;
+  color: #69758f;
+  font-size: 18px;
+}
+
+.support-text a {
+  color: #4f8cff;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+/* Ajustes para telas menores */
+@media (max-width: 640px) {
+  .brand-title {
+    font-size: 44px;
+  }
+
+  .login-form {
+    padding: 28px 22px 24px;
+  }
+
+  .label-row {
+    flex-direction: column;
     align-items: flex-start;
-    margin-top: 24px;
-    padding: 18px;
-    border: 1px solid rgba(96, 165, 250, 0.2);
-    border-radius: 22px;
-    background: rgba(59, 130, 246, 0.08);
-    color: var(--text-muted);
-    line-height: 1.5;
-}
-
-.admin-note i {
-    margin-top: 4px;
-    color: var(--primary);
-}
-
-@media (max-width: 860px) {
-    .login-page {
-        grid-template-columns: 1fr;
-    }
-
-    .brand-panel {
-        min-height: 360px;
-        padding: 94px 24px 34px;
-    }
-
-    .brand-panel::after {
-        background: linear-gradient(180deg, rgba(8, 17, 31, 0.15), rgba(8, 17, 31, 0.9));
-    }
-
-    .back-link {
-        top: 24px;
-        left: 24px;
-    }
-
-    .login-card {
-        padding: 32px 18px 42px;
-    }
-}
-
-@media (max-width: 520px) {
-    .brand-content h1 {
-        font-size: 2.6rem;
-    }
-
-    .brand-content p {
-        font-size: 0.98rem;
-    }
-
-    .login-header {
-        align-items: flex-start;
-    }
-
-    .login-form {
-        padding: 20px;
-        border-radius: 24px;
-    }
-
-    .form-options {
-        flex-direction: column;
-    }
+  }
 }

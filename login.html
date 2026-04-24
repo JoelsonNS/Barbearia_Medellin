@@ -1,17 +1,72 @@
-<!DOCTYPE html>
-<html lang="pt br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login</title>
-</head>
-<body>
-    
-    <main>
-        <section>
-            
-        </section>
+    <link rel="stylesheet" href="css/login.css" />
+  </head>
+  <body>
+    <!-- Estrutura principal da página de login -->
+    <main class="login-page">
+      <section class="login-box">
+        <!-- Área de identidade visual: ícone, subtítulo e nome da marca -->
+        <div class="brand">
+          <div class="brand-icon" aria-hidden="true">✂</div>
+          <p class="brand-subtitle">Área do Barbeiro</p>
+          <h1 class="brand-title">Medellin Barbearia</h1>
+        </div>
+
+        <!-- Formulário responsável por capturar e-mail e senha -->
+        <form class="login-form" id="loginForm">
+          <!-- Grupo do campo de e-mail -->
+          <div class="form-group">
+            <label for="email">E-mail</label>
+            <div class="input-wrapper">
+              <span class="input-icon" aria-hidden="true">✉</span>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="seu@email.com"
+                required
+              />
+            </div>
+          </div>
+
+          <!-- Grupo do campo de senha com link auxiliar -->
+          <div class="form-group">
+            <div class="label-row">
+              <label for="senha">Senha</label>
+              <a href="#" class="forgot-password">Esqueceu a senha?</a>
+            </div>
+            <div class="input-wrapper">
+              <span class="input-icon" aria-hidden="true">🔒</span>
+              <input
+                type="password"
+                id="senha"
+                name="senha"
+                placeholder="••••••••"
+                required
+              />
+            </div>
+          </div>
+
+          <!-- Botão principal de envio do formulário -->
+          <button type="submit" class="login-button">
+            Entrar
+            <span aria-hidden="true">→</span>
+          </button>
+        </form>
+
+        <!-- Área de suporte para usuários que ainda não têm acesso -->
+        <p class="support-text">
+          Ainda não faz parte?
+          <a href="#">Contatar suporte</a>
+        </p>
+      </section>
     </main>
 
-</body>
+    <script src="js/login.js"></script>
+  </body>
 </html>

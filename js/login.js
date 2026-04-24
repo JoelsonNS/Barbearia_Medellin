@@ -1,33 +1,21 @@
-const loginForm = document.getElementById("loginForm");
-const loginMessage = document.getElementById("loginMessage");
-const senhaInput = document.getElementById("senha");
-const toggleSenha = document.getElementById("toggleSenha");
+// Seleciona o formulário para controlar o envio via JavaScript.
+const form = document.getElementById("loginForm");
 
-toggleSenha.addEventListener("click", () => {
-    const senhaVisivel = senhaInput.type === "text";
-    senhaInput.type = senhaVisivel ? "password" : "text";
-    toggleSenha.setAttribute("aria-label", senhaVisivel ? "Mostrar senha" : "Ocultar senha");
-    toggleSenha.innerHTML = senhaVisivel
-        ? '<i class="fa-solid fa-eye"></i>'
-        : '<i class="fa-solid fa-eye-slash"></i>';
-});
+// Escuta o evento de envio para validar os campos antes de prosseguir.
+form.addEventListener("submit", function (event) {
+  // Impede o recarregamento padrão da página ao enviar o formulário.
+  event.preventDefault();
 
-loginForm.addEventListener("submit", (event) => {
-    event.preventDefault();
+  // Captura os valores digitados e remove espaços extras no início e no fim.
+  const email = document.getElementById("email").value.trim();
+  const senha = document.getElementById("senha").value.trim();
 
-    const email = loginForm.email.value.trim();
-    const senha = loginForm.senha.value.trim();
+  // Verifica se algum dos campos está vazio.
+  if (email === "" || senha === "") {
+    alert("Preencha e-mail e senha.");
+    return;
+  }
 
-    if (!email || !senha) {
-        loginMessage.textContent = "Preencha e-mail e senha para acessar a agenda.";
-        loginMessage.classList.remove("success");
-        return;
-    }
-
-    loginMessage.textContent = "Login validado. Redirecionando para a agenda...";
-    loginMessage.classList.add("success");
-
-    setTimeout(() => {
-        window.location.href = "agenda.html";
-    }, 700);
+  // Mensagem de exemplo para indicar que a validação passou.
+  alert("Login enviado com sucesso!");
 });
