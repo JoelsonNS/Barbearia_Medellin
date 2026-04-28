@@ -1,0 +1,228 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(180deg, #08111f 0%, #091321 100%);
+  color: #f4f7ff;
+}
+
+.agenda-page {
+  min-height: 100vh;
+}
+
+.agenda-header {
+  height: 96px;
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
+  border-bottom: 1px solid #1c2a43;
+}
+
+.back-button {
+  color: #ffffff;
+  font-size: 34px;
+  text-decoration: none;
+}
+
+.agenda-content {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 36px 22px 48px;
+}
+
+.agenda-title-block {
+  margin-bottom: 34px;
+}
+
+.agenda-title-block h1 {
+  font-size: 56px;
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+
+.agenda-title-block p {
+  color: #97a3bc;
+  font-size: 24px;
+}
+
+.agenda-title-block span {
+  color: #4f8cff;
+  font-weight: 700;
+}
+
+.days-slider {
+  display: flex;
+  gap: 18px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  margin-bottom: 28px;
+}
+
+.days-slider::-webkit-scrollbar {
+  display: none;
+}
+
+.day-card {
+  min-width: 118px;
+  height: 142px;
+  border-radius: 28px;
+  border: 1px solid #22314f;
+  background: #10192d;
+  color: #7f8ca7;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.day-card.active {
+  background: linear-gradient(180deg, #4f8cff 0%, #4279e6 100%);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 14px 28px rgba(23, 48, 102, 0.35);
+}
+
+.day-name {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.day-number {
+  font-size: 40px;
+  font-weight: 700;
+}
+
+.appointments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.appointment-card {
+  display: grid;
+  grid-template-columns: 96px 1fr auto;
+  align-items: center;
+  gap: 22px;
+  padding: 26px;
+  border: 1px solid #22314f;
+  border-radius: 30px;
+  background: #0d1729;
+}
+
+.client-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 28px;
+  overflow: hidden;
+  background: #25324d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.client-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.client-avatar.placeholder {
+  color: #63708c;
+  font-size: 42px;
+}
+
+.appointment-info h2 {
+  font-size: 28px;
+  margin-bottom: 14px;
+}
+
+.service {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #5a98ff;
+  font-size: 18px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.service i {
+  font-size: 22px;
+}
+
+.appointment-time {
+  text-align: right;
+}
+
+.appointment-time strong {
+  display: block;
+  font-size: 34px;
+  margin-bottom: 12px;
+}
+
+.appointment-time span {
+  color: #6f7d9d;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+@media (max-width: 640px) {
+  .agenda-title-block h1 {
+    font-size: 42px;
+  }
+
+  .agenda-title-block p {
+    font-size: 18px;
+  }
+
+  .appointment-card {
+    grid-template-columns: 76px 1fr;
+    gap: 16px;
+  }
+
+  .appointment-time {
+    grid-column: 2;
+    text-align: left;
+  }
+
+  .client-avatar {
+    width: 76px;
+    height: 76px;
+    border-radius: 22px;
+  }
+
+  .appointment-info h2 {
+    font-size: 22px;
+  }
+
+  .appointment-time strong {
+    font-size: 28px;
+  }
+}
+
+/* ─── Estado vazio (nenhum agendamento no dia) ─── */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 64px 0;
+  color: #4a5568;
+}
+
+.empty-state i {
+  font-size: 64px;
+}
+
+.empty-state p {
+  font-size: 20px;
+  font-weight: 600;
+}
