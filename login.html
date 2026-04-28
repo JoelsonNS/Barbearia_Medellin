@@ -74,6 +74,10 @@
       </section>
     </main>
 
-    <script src="js/login.js"></script>
+    <!-- Supabase SDK (necessário antes do login.js) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- login.js como módulo para acesso ao import.meta.env do Vite -->
+    <script type="module" src="js/login.js"></script>
   </body>
 </html>

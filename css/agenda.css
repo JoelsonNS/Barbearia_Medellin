@@ -61,6 +61,11 @@ body {
   overflow-x: auto;
   padding-bottom: 10px;
   margin-bottom: 28px;
+  cursor: grab; /* indica que é arrastável no desktop */
+}
+
+.days-slider:active {
+  cursor: grabbing;
 }
 
 .days-slider::-webkit-scrollbar {

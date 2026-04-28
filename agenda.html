@@ -55,96 +55,20 @@
           </button>
         </section>
 
+        <!-- Os cards são gerados dinamicamente pelo agenda.js -->
         <section class="appointments-list">
-          <article class="appointment-card">
-            <div class="client-avatar">
-              <img
-                src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80"
-                alt="Ricardo Oliveira"
-              />
-            </div>
-
-            <div class="appointment-info">
-              <h2>Ricardo Oliveira</h2>
-              <p class="service">
-                <i class="bi bi-scissors"></i>
-                Corte Social
-              </p>
-            </div>
-
-            <div class="appointment-time">
-              <strong>09:00</strong>
-              <span>14 OUT 2023</span>
-            </div>
-          </article>
-
-          <article class="appointment-card">
-            <div class="client-avatar">
-              <img
-                src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=300&q=80"
-                alt="Marcus Vinícius"
-              />
-            </div>
-
-            <div class="appointment-info">
-              <h2>Marcus Vinícius</h2>
-              <p class="service">
-                <i class="bi bi-brush"></i>
-                Barba Premium
-              </p>
-            </div>
-
-            <div class="appointment-time">
-              <strong>10:30</strong>
-              <span>14 OUT 2023</span>
-            </div>
-          </article>
-
-          <article class="appointment-card">
-            <div class="client-avatar placeholder">
-              <i class="bi bi-person-fill"></i>
-            </div>
-
-            <div class="appointment-info">
-              <h2>Fernando Costa</h2>
-              <p class="service">
-                <i class="bi bi-scissors"></i>
-                Corte & Barba
-              </p>
-            </div>
-
-            <div class="appointment-time">
-              <strong>14:00</strong>
-              <span>14 OUT 2023</span>
-            </div>
-          </article>
-
-          <article class="appointment-card">
-            <div class="client-avatar">
-              <img
-                src="https://images.unsplash.com/photo-1504593811423-6dd665756598?auto=format&fit=crop&w=300&q=80"
-                alt="André Santos"
-              />
-            </div>
-
-            <div class="appointment-info">
-              <h2>André Santos</h2>
-              <p class="service">
-                <i class="bi bi-emoji-sunglasses"></i>
-                Limpeza de Pele
-              </p>
-            </div>
-
-            <div class="appointment-time">
-              <strong>16:30</strong>
-              <span>14 OUT 2023</span>
-            </div>
-          </article>
+          <div class="empty-state" role="status" aria-live="polite">
+            <i class="bi bi-hourglass-split"></i>
+            <p>Carregando agendamentos…</p>
+          </div>
         </section>
       </section>
     </main>
 
-    <!-- Script principal da agenda (carregado após o DOM) -->
-    <script src="js/agenda.js"></script>
+    <!-- Supabase SDK (deve carregar antes dos módulos JS) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- agenda.js: usa o global supabase do CDN acima -->
+    <script type="module" src="js/agenda.js"></script>
   </body>
 </html>

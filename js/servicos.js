@@ -122,11 +122,18 @@ function obterDataSelecionada() {
   if (!diaAtivo) return null;
 
   const hoje = new Date();
-  const diaNumero = diaAtivo.querySelector("strong").textContent;
+  const diaNumero = Number(diaAtivo.querySelector("strong").textContent);
 
   const data = new Date(hoje.getFullYear(), hoje.getMonth(), diaNumero);
 
-  return data.toISOString().split("T")[0];
+  // Usa componentes locais em vez de toISOString() para evitar
+  // deslocamento de fuso horário (Brasil é UTC-3, o que faria
+  // toISOString() retornar o dia anterior à meia-noite).
+  const ano = data.getFullYear();
+  const mes = String(data.getMonth() + 1).padStart(2, "0");
+  const dia = String(data.getDate()).padStart(2, "0");
+
+  return `${ano}-${mes}-${dia}`;
 }
 
 //abrir o whatsapp

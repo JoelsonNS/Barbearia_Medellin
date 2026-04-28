@@ -1,105 +1,44 @@
 /* ============================================================
-   agenda.js — Lógica principal da página "Minha Agenda"
+   agenda.js — Agenda do barbeiro conectada ao Supabase
    Responsável por:
-     • Gerar os cards de dias dinamicamente a partir de hoje
-     • Renderizar agendamentos filtrados por dia
-     • Atualizar o contador de atendimentos no cabeçalho
+     • Verificar autenticação (sessão ativa do barbeiro)
+     • Buscar agendamentos do dia selecionado no banco
+     • Renderizar os cards com dados reais
+     • Atualizar em tempo real via Supabase Realtime
    ============================================================ */
 
-// ─── Dados de agendamentos ───────────────────────────────────
-// Cada entrada usa a data no formato "YYYY-MM-DD" como chave.
-// Em um projeto real esses dados viriam de uma API/back-end.
-const agendamentos = {
-  [getDataFormatada(0)]: [
-    {
-      nome: "Ricardo Oliveira",
-      servico: "Corte Social",
-      icone: "bi-scissors",
-      horario: "09:00",
-      foto: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80",
-    },
-    {
-      nome: "Marcus Vinícius",
-      servico: "Barba Premium",
-      icone: "bi-brush",
-      horario: "10:30",
-      foto: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=300&q=80",
-    },
-    {
-      nome: "Fernando Costa",
-      servico: "Corte & Barba",
-      icone: "bi-scissors",
-      horario: "14:00",
-      foto: null, // sem foto — exibe ícone placeholder
-    },
-    {
-      nome: "André Santos",
-      servico: "Limpeza de Pele",
-      icone: "bi-emoji-sunglasses",
-      horario: "16:30",
-      foto: "https://images.unsplash.com/photo-1504593811423-6dd665756598?auto=format&fit=crop&w=300&q=80",
-    },
-    {
-      nome: "Paulo Henrique",
-      servico: "Corte Social",
-      icone: "bi-scissors",
-      horario: "18:00",
-      foto: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
-    },
-  ],
-  [getDataFormatada(1)]: [
-    {
-      nome: "Carlos Mendes",
-      servico: "Barba Premium",
-      icone: "bi-brush",
-      horario: "08:30",
-      foto: "https://images.unsplash.com/photo-1463453091185-61582044d556?auto=format&fit=crop&w=300&q=80",
-    },
-    {
-      nome: "Thiago Lima",
-      servico: "Corte & Barba",
-      icone: "bi-scissors",
-      horario: "11:00",
-      foto: null,
-    },
-    {
-      nome: "Gabriel Rocha",
-      servico: "Corte Social",
-      icone: "bi-scissors",
-      horario: "15:00",
-      foto: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=300&q=80",
-    },
-  ],
-  [getDataFormatada(2)]: [
-    {
-      nome: "Roberto Alves",
-      servico: "Limpeza de Pele",
-      icone: "bi-emoji-sunglasses",
-      horario: "10:00",
-      foto: "https://images.unsplash.com/photo-1521119989659-a83eee488004?auto=format&fit=crop&w=300&q=80",
-    },
-    {
-      nome: "Eduardo Nunes",
-      servico: "Corte Social",
-      icone: "bi-scissors",
-      horario: "13:30",
-      foto: null,
-    },
-  ],
-  // Demais dias ficam sem agendamentos — exibirá estado "vazio"
-};
+// ─── Cliente Supabase ────────────────────────────────────────
+// "supabase" é o objeto global injetado pelo CDN no agenda.html.
+// Mesmo padrão utilizado no servicos.js.
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
+
+const db = supabase.createClient(supabaseUrl, supabaseKey);
+
+// ─── Mapeamento de serviço → ícone Bootstrap Icons ──────────
+/**
+ * Retorna a classe de ícone correspondente ao nome do serviço.
+ * @param {string} servico
+ * @returns {string}
+ */
+function iconeDoServico(servico) {
+  const nome = servico.toLowerCase();
+  if (nome.includes("barba")) return "bi-brush";
+  if (nome.includes("pele") || nome.includes("limpeza"))
+    return "bi-emoji-sunglasses";
+  return "bi-scissors"; // padrão para cortes
+}
 
 // ─── Helpers de data ─────────────────────────────────────────
 
 /**
- * Retorna a data de hoje + `offsetDias` no formato "YYYY-MM-DD".
- * @param {number} offsetDias - Quantos dias a partir de hoje (0 = hoje)
+ * Retorna a data de hoje + offsetDias no formato "YYYY-MM-DD".
+ * @param {number} offsetDias
  * @returns {string}
  */
 function getDataFormatada(offsetDias = 0) {
   const d = new Date();
   d.setDate(d.getDate() + offsetDias);
-  // Monta o formato ISO sem fuso horário para evitar deslocamentos
   const ano = d.getFullYear();
   const mes = String(d.getMonth() + 1).padStart(2, "0");
   const dia = String(d.getDate()).padStart(2, "0");
@@ -107,8 +46,7 @@ function getDataFormatada(offsetDias = 0) {
 }
 
 /**
- * Formata uma data "YYYY-MM-DD" para exibição nos cards de agendamento,
- * ex.: "14 OUT 2023".
+ * Formata "YYYY-MM-DD" para exibição humana, ex.: "28 ABR 2026".
  * @param {string} dataISO
  * @returns {string}
  */
@@ -131,33 +69,30 @@ function formatarDataExibicao(dataISO) {
   return `${Number(dia)} ${meses[Number(mes) - 1]} ${ano}`;
 }
 
-// ─── Geração dos cards de dias ───────────────────────────────
+// ─── Slider de dias ──────────────────────────────────────────
 
-/** Nomes abreviados dos dias da semana (0 = domingo) */
 const NOMES_DIA = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"];
 
 /**
- * Gera e insere os botões de dias no slider.
- * Cria 7 dias a partir de hoje.
- * @param {string} dataAtiva - Chave "YYYY-MM-DD" do dia selecionado
+ * Gera os botões de dias (hoje + 6 dias) no slider.
+ * @param {string} dataAtiva - "YYYY-MM-DD" do dia selecionado
  */
 function renderizarSliderDias(dataAtiva) {
   const slider = document.querySelector(".days-slider");
-  slider.innerHTML = ""; // limpa cards anteriores antes de re-renderizar
+  slider.innerHTML = "";
 
   for (let i = 0; i < 7; i++) {
     const dataISO = getDataFormatada(i);
-    const dataObj = new Date(dataISO + "T00:00:00"); // força horário local
+    const dataObj = new Date(dataISO + "T00:00:00");
 
     const nomeDia = i === 0 ? "HOJE" : NOMES_DIA[dataObj.getDay()];
     const numeroDia = dataObj.getDate();
     const ativo = dataISO === dataAtiva ? "active" : "";
 
-    // Cria o botão com os spans internos
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = `day-card ${ativo}`.trim();
-    btn.dataset.data = dataISO; // armazena a chave de data no elemento
+    btn.dataset.data = dataISO;
     btn.setAttribute("aria-label", `${nomeDia} dia ${numeroDia}`);
     btn.innerHTML = `
       <span class="day-name">${nomeDia}</span>
@@ -168,49 +103,70 @@ function renderizarSliderDias(dataAtiva) {
   }
 }
 
-// ─── Renderização dos agendamentos ──────────────────────────
+// ─── Busca no banco ──────────────────────────────────────────
 
 /**
- * Cria o HTML de um único card de agendamento.
- * @param {Object} ag - Objeto de agendamento
- * @param {string} dataISO - Data no formato "YYYY-MM-DD" para exibição
- * @returns {string} HTML do <article>
+ * Consulta o Supabase buscando todos os agendamentos da data.
+ * A coluna de data no banco se chama "dados" (definida no schema).
+ * @param {string} dataISO - "YYYY-MM-DD"
+ * @returns {Promise<Array>}
  */
-function criarCardAgendamento(ag, dataISO) {
-  // Define o bloco de avatar: foto ou ícone placeholder
-  const avatarHTML = ag.foto
-    ? `<img src="${ag.foto}" alt="${ag.nome}" loading="lazy" />`
-    : `<i class="bi bi-person-fill"></i>`;
+async function buscarAgendamentos(dataISO) {
+  // Log de diagnóstico: mostra exatamente o que está sendo consultado
+  console.log("[agenda] buscando agendamentos para a data:", dataISO);
 
-  const classeAvatar = ag.foto ? "client-avatar" : "client-avatar placeholder";
-  const dataExibicao = formatarDataExibicao(dataISO);
+  const { data, error } = await db
+    .from("agendamentos")
+    .select("*")
+    .eq("dados", dataISO) // "dados" é o nome da coluna de data no banco
+    .order("hora", { ascending: true }); // ordena por horário crescente
 
+  // Log de diagnóstico: mostra o retorno bruto do Supabase
+  console.log("[agenda] resultado do Supabase →", { data, error });
+
+  if (error) {
+    console.error("Erro ao buscar agendamentos:", error.message);
+    return { registros: [], erro: error.message };
+  }
+
+  return { registros: data ?? [], erro: null };
+}
+
+// ─── Renderização dos cards ──────────────────────────────────
+
+/**
+ * Cria o HTML de um card de agendamento a partir de um registro do banco.
+ * @param {Object} registro - Linha da tabela agendamentos
+ * @returns {string}
+ */
+function criarCardAgendamento(registro) {
+  const dataExibicao = formatarDataExibicao(registro.dados);
+  const icone = iconeDoServico(registro.servico);
+
+  // Sem URL de foto no banco: usa sempre o ícone placeholder
   return `
     <article class="appointment-card">
-      <div class="${classeAvatar}">
-        ${avatarHTML}
+      <div class="client-avatar placeholder">
+        <i class="bi bi-person-fill"></i>
       </div>
 
       <div class="appointment-info">
-        <h2>${ag.nome}</h2>
+        <h2>${registro.cliente}</h2>
         <p class="service">
-          <i class="bi ${ag.icone}"></i>
-          ${ag.servico}
+          <i class="bi ${icone}"></i>
+          ${registro.servico}
         </p>
       </div>
 
       <div class="appointment-time">
-        <strong>${ag.horario}</strong>
+        <strong>${registro.hora}</strong>
         <span>${dataExibicao}</span>
       </div>
     </article>
   `;
 }
 
-/**
- * Exibe o estado vazio quando não há agendamentos no dia selecionado.
- * @returns {string} HTML do aviso
- */
+/** HTML exibido quando o dia não tem agendamentos */
 function criarEstadoVazio() {
   return `
     <div class="empty-state" role="status" aria-live="polite">
@@ -220,76 +176,197 @@ function criarEstadoVazio() {
   `;
 }
 
+/** HTML exibido enquanto os dados estão sendo buscados */
+function criarEstadoCarregando() {
+  return `
+    <div class="empty-state" role="status" aria-live="polite">
+      <i class="bi bi-hourglass-split"></i>
+      <p>Carregando agendamentos…</p>
+    </div>
+  `;
+}
+
 /**
- * Renderiza a lista de agendamentos do dia selecionado e
- * atualiza o contador no bloco de título.
- * @param {string} dataISO - Data no formato "YYYY-MM-DD"
+ * HTML exibido quando ocorre um erro ao buscar os dados.
+ * Mostra a mensagem de erro para facilitar o diagnóstico.
+ * @param {string} mensagemErro
  */
-function renderizarAgendamentos(dataISO) {
+function criarEstadoErro(mensagemErro) {
+  return `
+    <div class="empty-state" role="alert" aria-live="assertive">
+      <i class="bi bi-exclamation-triangle"></i>
+      <p>Erro ao carregar agendamentos.</p>
+      <small style="color:#f87171;font-size:13px;margin-top:8px;display:block">${mensagemErro}</small>
+    </div>
+  `;
+}
+
+/**
+ * Busca os agendamentos no Supabase e renderiza na tela.
+ * Também atualiza o contador no subtítulo.
+ * @param {string} dataISO
+ */
+async function renderizarAgendamentos(dataISO) {
   const lista = document.querySelector(".appointments-list");
   const contadorSpan = document.querySelector(".agenda-title-block span");
 
-  // Busca os agendamentos do dia; retorna array vazio se não existir
-  const registros = agendamentos[dataISO] ?? [];
+  // Mostra feedback de carregamento enquanto aguarda o banco
+  lista.innerHTML = criarEstadoCarregando();
 
-  // Atualiza o contador no subtítulo
+  const { registros, erro } = await buscarAgendamentos(dataISO);
+
+  // Se houve erro na consulta, exibe mensagem visível na tela
+  if (erro) {
+    lista.innerHTML = criarEstadoErro(erro);
+    contadorSpan.textContent = "0 atendimentos";
+    return;
+  }
+
   const total = registros.length;
+
+  // Atualiza o contador no subtítulo "Você tem X atendimentos para hoje"
   contadorSpan.textContent = `${total} ${total === 1 ? "atendimento" : "atendimentos"}`;
 
   // Renderiza os cards ou o estado vazio
   if (total === 0) {
     lista.innerHTML = criarEstadoVazio();
   } else {
-    lista.innerHTML = registros
-      .map((ag) => criarCardAgendamento(ag, dataISO))
-      .join("");
+    lista.innerHTML = registros.map(criarCardAgendamento).join("");
   }
 }
 
-// ─── Delegação de eventos ────────────────────────────────────
+// ─── Delegação de eventos do slider ─────────────────────────
 
 /**
- * Registra o listener de clique no slider de dias usando delegação de eventos.
- * Ao clicar em um day-card, atualiza o estado ativo e re-renderiza os dados.
+ * Registra o clique no slider com delegação de eventos.
+ * Ao trocar de dia, busca novos dados no banco.
  */
 function inicializarSliderDias() {
   const slider = document.querySelector(".days-slider");
 
   slider.addEventListener("click", (evento) => {
-    // Garante que o clique foi em um day-card (ou em elemento filho dele)
     const card = evento.target.closest(".day-card");
     if (!card) return;
 
     const dataSelecionada = card.dataset.data;
 
-    // Remove a classe active do card anterior e aplica no novo
+    // Atualiza classe active
     slider.querySelectorAll(".day-card").forEach((btn) => {
       btn.classList.remove("active");
     });
     card.classList.add("active");
 
-    // Garante que o card ativo fique visível no scroll horizontal
+    // Scroll suave para manter o card visível
     card.scrollIntoView({
       behavior: "smooth",
       block: "nearest",
       inline: "center",
     });
 
-    // Re-renderiza os agendamentos com o novo dia
     renderizarAgendamentos(dataSelecionada);
   });
 }
 
-// ─── Inicialização ───────────────────────────────────────────
+// ─── Drag-to-scroll no slider (desktop) ─────────────────────
 
 /**
- * Ponto de entrada da aplicação.
- * Executado quando o DOM estiver completamente carregado.
+ * Permite arrastar o slider horizontalmente com o mouse no desktop.
+ * No mobile o scroll nativo por toque já funciona via CSS.
  */
-document.addEventListener("DOMContentLoaded", () => {
-  const dataHoje = getDataFormatada(0); // chave do dia atual
+function inicializarDragScroll() {
+  const slider = document.querySelector(".days-slider");
 
-  renderizarSliderDias(dataHoje); // monta os botões de dias
-  renderizarAgendamentos(dataHoje); // exibe os agendamentos de hoje
-  inicializarSliderDias(); // ativa os eventos de clique
+  let arrastando = false; // indica se o botão do mouse está pressionado
+  let inicioX = 0; // posição X do mouse no momento do clique
+  let scrollInicio = 0; // scrollLeft do slider no momento do clique
+
+  // Inicia o arraste ao pressionar o botão do mouse
+  slider.addEventListener("mousedown", (e) => {
+    arrastando = true;
+    inicioX = e.pageX - slider.offsetLeft;
+    scrollInicio = slider.scrollLeft;
+    slider.style.cursor = "grabbing"; // muda cursor para indicar arraste
+    slider.style.userSelect = "none"; // evita seleção de texto durante arraste
+  });
+
+  // Encerra o arraste ao soltar ou sair do elemento
+  const pararArraste = () => {
+    arrastando = false;
+    slider.style.cursor = "grab";
+    slider.style.userSelect = "";
+  };
+  slider.addEventListener("mouseup", pararArraste);
+  slider.addEventListener("mouseleave", pararArraste);
+
+  // Move o scroll proporcional ao movimento do mouse
+  slider.addEventListener("mousemove", (e) => {
+    if (!arrastando) return;
+    e.preventDefault(); // impede seleção de texto acidental
+    const x = e.pageX - slider.offsetLeft;
+    const distancia = (x - inicioX) * 1.5; // multiplicador para scroll mais ágil
+    slider.scrollLeft = scrollInicio - distancia;
+  });
+
+  // Cursor grab padrão ao hover (indica que é arrastável)
+  slider.style.cursor = "grab";
+}
+
+// ─── Logout ──────────────────────────────────────────────────
+
+/**
+ * Encerra a sessão do Supabase ao clicar no botão voltar.
+ * Sem signOut(), o Supabase manteria a sessão mesmo após sair da página.
+ */
+function inicializarLogout() {
+  const btnVoltar = document.querySelector(".back-button");
+  if (!btnVoltar) return;
+
+  btnVoltar.addEventListener("click", async (evento) => {
+    evento.preventDefault(); // impede navegação imediata
+    await db.auth.signOut(); // encerra a sessão no Supabase
+    window.location.replace("login.html");
+  });
+}
+
+// ─── Realtime: atualização automática ────────────────────────
+
+/**
+ * Escuta novos INSERTs na tabela e re-renderiza a lista
+ * automaticamente se o dia ativo for o afetado.
+ */
+function inicializarRealtime() {
+  db.channel("agenda-realtime")
+    .on(
+      "postgres_changes",
+      { event: "INSERT", schema: "public", table: "agendamentos" },
+      () => {
+        // Pega o dia atualmente ativo na tela e re-busca os dados
+        const cardAtivo = document.querySelector(".day-card.active");
+        if (cardAtivo) {
+          renderizarAgendamentos(cardAtivo.dataset.data);
+        }
+      },
+    )
+    .subscribe();
+}
+
+// ─── Inicialização ───────────────────────────────────────────
+
+document.addEventListener("DOMContentLoaded", async () => {
+  // ── Verificação de sessão ─────────────────────────────────
+  // Se o barbeiro não estiver logado, redireciona para o login.
+  const { data: { session } } = await db.auth.getSession();
+  if (!session) {
+    window.location.replace("login.html");
+    return;
+  }
+
+  const dataHoje = getDataFormatada(0);
+
+  renderizarSliderDias(dataHoje);         // monta os botões de dias
+  await renderizarAgendamentos(dataHoje); // busca dados reais do banco
+  inicializarSliderDias();                // ativa navegação por dia
+  inicializarDragScroll();                // habilita arraste com mouse no desktop
+  inicializarLogout();                    // conecta o botão voltar ao signOut
+  inicializarRealtime();                  // escuta novos agendamentos ao vivo
 });

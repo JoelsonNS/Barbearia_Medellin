@@ -159,6 +159,17 @@ body {
     filter 0.2s ease;
 }
 
+/* Mensagem de erro exibida abaixo dos campos */
+.login-error {
+  color: #f87171;
+  font-size: 15px;
+  margin-top: -8px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(248, 113, 113, 0.1);
+  border: 1px solid rgba(248, 113, 113, 0.25);
+}
+
 /* Efeito visual ao passar o mouse no botão */
 .login-button:hover {
   transform: translateY(-2px);
