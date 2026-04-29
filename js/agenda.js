@@ -355,7 +355,9 @@ function inicializarRealtime() {
 document.addEventListener("DOMContentLoaded", async () => {
   // ── Verificação de sessão ─────────────────────────────────
   // Se o barbeiro não estiver logado, redireciona para o login.
-  const { data: { session } } = await db.auth.getSession();
+  const {
+    data: { session },
+  } = await db.auth.getSession();
   if (!session) {
     window.location.replace("login.html");
     return;
@@ -363,10 +365,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const dataHoje = getDataFormatada(0);
 
-  renderizarSliderDias(dataHoje);         // monta os botões de dias
+  renderizarSliderDias(dataHoje); // monta os botões de dias
   await renderizarAgendamentos(dataHoje); // busca dados reais do banco
-  inicializarSliderDias();                // ativa navegação por dia
-  inicializarDragScroll();                // habilita arraste com mouse no desktop
-  inicializarLogout();                    // conecta o botão voltar ao signOut
-  inicializarRealtime();                  // escuta novos agendamentos ao vivo
+  inicializarSliderDias(); // ativa navegação por dia
+  inicializarDragScroll(); // habilita arraste com mouse no desktop
+  inicializarLogout(); // conecta o botão voltar ao signOut
+  inicializarRealtime(); // escuta novos agendamentos ao vivo
 });
