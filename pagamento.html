@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Confirmação | BarberLink</title>
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/pagamento.css" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+
+    <!-- ===== HEADER ===== -->
+    <header class="pag-header">
+      <a href="servicos.html" class="pag-voltar" aria-label="Voltar">
+        <i class="fa-solid fa-arrow-left"></i>
+      </a>
+      <h1>Confirmação</h1>
+      <!-- espaço vazio para centralizar o título -->
+      <span></span>
+    </header>
+
+    <main class="pag-main">
+
+      <!-- ===== RESUMO DO AGENDAMENTO ===== -->
+      <section class="pag-resumo">
+        <h2>Resumo do Agendamento</h2>
+
+        <div class="pag-resumo-card">
+          <div class="pag-resumo-icone">
+            <i class="fa-solid fa-scissors"></i>
+          </div>
+          <div class="pag-resumo-info">
+            <!-- Preenchidos pelo pagamento.js com dados do localStorage -->
+            <p class="pag-servico-nome" id="resumoServico">—</p>
+            <p class="pag-resumo-detalhe">
+              <span id="resumoData">—</span> às <span id="resumoHora">—</span>
+            </p>
+          </div>
+          <p class="pag-preco" id="resumoPreco">R$ —</p>
+        </div>
+      </section>
+
+      <!-- ===== CONFIRMAÇÃO DE PAGAMENTO NO LOCAL ===== -->
+      <section class="pag-local-container">
+        <i class="fa-solid fa-store"></i>
+        <h3>Pague na chegada</h3>
+        <p>
+          Apresente este agendamento ao chegar na barbearia.<br />
+          O pagamento será feito presencialmente.
+        </p>
+
+        <!-- Métodos aceitos -->
+        <div class="pag-metodos">
+          <span><i class="fa-solid fa-money-bill-wave"></i> Dinheiro</span>
+          <span><i class="fa-solid fa-credit-card"></i> Cartão</span>
+          <span><i class="fa-brands fa-pix"></i> Pix</span>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ===== BOTÃO FINALIZAR (fixo no rodapé) ===== -->
+    <footer class="pag-footer">
+      <button class="pag-finalizar-btn" id="btnFinalizar" type="button">
+        Finalizar Agendamento
+      </button>
+    </footer>
+
+    <script type="module" src="js/pagamento.js"></script>
+  </body>
+</html>

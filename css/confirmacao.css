@@ -1,0 +1,239 @@
+/* ============================================================
+   confirmacao.css — Página de agendamento confirmado
+   Tema escuro, seguindo o padrão visual do projeto.
+   ============================================================ */
+
+/* ─── Botão X (fechar) ──────────────────────────────────── */
+.conf-fechar {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 10;
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 50%;
+  background: #151f30;
+  color: #ffffff;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.conf-fechar:hover {
+  background: #1e2f48;
+}
+
+/* ─── Layout principal ──────────────────────────────────── */
+.conf-main {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 80px 20px 56px; /* 80px: espaço para o botão X */
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* ─── Hero: círculo + título + subtítulo ────────────────── */
+.conf-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 20px;
+}
+
+/* Círculo verde com ícone de check — igual ao print */
+.conf-check-circle {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 36%, #22c97e, #0e9a5c);
+  /* anel translúcido ao redor do círculo */
+  box-shadow: 0 0 0 18px rgba(14, 154, 92, 0.13);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.conf-check-circle i {
+  color: #ffffff;
+  font-size: 46px;
+}
+
+.conf-hero h1 {
+  font-size: 38px;
+  font-weight: 800;
+  line-height: 1.2;
+  color: #ffffff;
+}
+
+.conf-subtitulo {
+  font-size: 15px;
+  color: #7f8ca7;
+  line-height: 1.65;
+  max-width: 320px;
+}
+
+/* ─── Cards de detalhes ─────────────────────────────────── */
+.conf-detalhes {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Base de cada card */
+.conf-card {
+  background: #0d1828;
+  border: 1px solid #182337;
+  border-radius: 16px;
+  padding: 18px 20px;
+}
+
+/* Card LOCAL: ícone + info na horizontal */
+.conf-card-local {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.conf-card-icone {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  background: #172033;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.conf-card-icone i {
+  color: #4f8cff;
+  font-size: 20px;
+}
+
+.conf-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Ícone no topo dos cards de DATA/HORÁRIO */
+.conf-icone-topo {
+  display: block;
+  color: #4f8cff;
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+/* Label pequeno (ex.: "LOCAL", "DATA") */
+.conf-card-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  color: #4a5a74;
+  text-transform: uppercase;
+}
+
+/* Valor em destaque */
+.conf-card-valor {
+  display: block;
+  font-size: 17px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-top: 3px;
+}
+
+/* Grid de 2 colunas para DATA e HORÁRIO */
+.conf-cards-duplos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* ─── Seção de ações ────────────────────────────────────── */
+.conf-acoes {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Botão azul principal "Ir pelo Maps" */
+.conf-btn-maps {
+  width: 100%;
+  padding: 18px;
+  border-radius: 16px;
+  background: linear-gradient(90deg, #2563eb, #3b82f6);
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 700;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  transition:
+    filter 0.2s,
+    transform 0.15s;
+}
+
+.conf-btn-maps:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+/* Links de texto secundários */
+.conf-link {
+  background: none;
+  border: none;
+  color: #4f8cff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  padding: 0;
+  font-family: inherit;
+  text-align: center;
+}
+
+.conf-link:hover {
+  color: #7fb3ff;
+}
+
+/* ─── Preview do mapa ───────────────────────────────────── */
+.conf-mapa-bloco {
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid #182337;
+}
+
+.conf-mapa-iframe {
+  width: 100%;
+  height: 210px;
+  display: block;
+  border: none;
+  /* filtro para harmonizar o mapa com o tema escuro */
+  filter: invert(90%) hue-rotate(180deg) saturate(0.65) brightness(0.82);
+}
+
+.conf-mapa-rodape {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #0d1828;
+  border-top: 1px solid #182337;
+  font-size: 13px;
+  color: #7f8ca7;
+}
+
+.conf-mapa-rodape i {
+  color: #4f8cff;
+  flex-shrink: 0;
+}

@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Agendamento Confirmado | BarberLink</title>
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/confirmacao.css" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- Botão X: fecha e volta para home -->
+    <button class="conf-fechar" id="btnFechar" aria-label="Fechar">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+
+    <main class="conf-main">
+      <!-- ===== HERO: check + título ===== -->
+      <section class="conf-hero">
+        <div class="conf-check-circle" aria-hidden="true">
+          <i class="fa-solid fa-check"></i>
+        </div>
+
+        <h1>Agendamento<br />Confirmado!</h1>
+
+        <p class="conf-subtitulo">
+          Obrigado por escolher a Medellin Barbearia. Seu horário foi reservado
+          com sucesso.
+        </p>
+      </section>
+
+      <!-- ===== CARDS DE DETALHES ===== -->
+      <section class="conf-detalhes" aria-label="Detalhes do agendamento">
+        <!-- Card LOCAL (largura total) -->
+        <div class="conf-card conf-card-local">
+          <div class="conf-card-icone">
+            <i class="fa-solid fa-store"></i>
+          </div>
+          <div class="conf-card-info">
+            <span class="conf-card-label">LOCAL</span>
+            <strong class="conf-card-valor" id="detalhesLocal">
+              Medellin Barbearia
+            </strong>
+          </div>
+        </div>
+
+        <!-- Cards DATA e HORÁRIO lado a lado -->
+        <div class="conf-cards-duplos">
+          <div class="conf-card">
+            <i class="fa-regular fa-calendar conf-icone-topo"></i>
+            <span class="conf-card-label">DATA</span>
+            <strong class="conf-card-valor" id="detalhesData">—</strong>
+          </div>
+
+          <div class="conf-card">
+            <i class="fa-regular fa-clock conf-icone-topo"></i>
+            <span class="conf-card-label">HORÁRIO</span>
+            <strong class="conf-card-valor" id="detalhesHora">—</strong>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== AÇÕES ===== -->
+      <section class="conf-acoes">
+        <!-- Botão principal azul: abre o Google Maps -->
+        <a
+          class="conf-btn-maps"
+          id="btnMaps"
+          href="#"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <i class="fa-solid fa-map"></i>
+          Ir até a barbearia pelo maps
+        </a>
+
+        <!-- Links secundários -->
+        <a href="agenda.html" class="conf-link">Ver Meus Agendamentos</a>
+        <button class="conf-link" id="btnVoltar" type="button">
+          Voltar para o Início
+        </button>
+      </section>
+
+      <!-- ===== PREVIEW DO MAPA ===== -->
+      <section class="conf-mapa-bloco" aria-label="Localização da barbearia">
+        <iframe
+          id="mapaEmbed"
+          class="conf-mapa-iframe"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          allowfullscreen
+          title="Localização Medellin Barbearia"
+        ></iframe>
+
+        <div class="conf-mapa-rodape">
+          <i class="fa-solid fa-location-dot"></i>
+          <span id="enderecoTexto">Recife - PE</span>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="js/confirmacao.js"></script>
+  </body>
+</html>

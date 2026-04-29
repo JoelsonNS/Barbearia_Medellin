@@ -327,15 +327,24 @@ confirmar.addEventListener("click", async () => {
   horaAtiva.classList.remove("ativo");
 
   /* =============================
-    ENVIAR PARA WHATSAPP
+    SALVAR DADOS E IR PARA PAGAMENTO
+    Guarda os dados no localStorage para
+    a página de pagamento poder exibir
+    o resumo e gerar o QR Code Pix.
     ============================= */
 
-  enviarWhatsApp(
-    servicoSelecionado,
-    dataSelecionada,
-    horaSelecionada,
-    nomeAtual,
+  localStorage.setItem(
+    "agendamentoPendente",
+    JSON.stringify({
+      servico: servicoSelecionado,
+      data: dataSelecionada,
+      hora: horaSelecionada,
+      cliente: nomeAtual,
+    }),
   );
+
+  // Redireciona para a página de pagamento/finalização
+  window.location.href = "pagamento.html";
 });
 
 /* ==========================================

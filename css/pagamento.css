@@ -1,0 +1,182 @@
+/* ============================================================
+   pagamento.css — Estilos da página de confirmação do agendamento
+   Segue o mesmo tema escuro das outras páginas do projeto.
+   ============================================================ */
+
+/* ─── Header ─────────────────────────────────────────────── */
+.pag-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 22px;
+  border-bottom: 1px solid #1c2a43;
+}
+
+.pag-header h1 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.pag-voltar {
+  color: #ffffff;
+  font-size: 20px;
+  text-decoration: none;
+  width: 36px;
+}
+
+/* ─── Main ───────────────────────────────────────────────── */
+.pag-main {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 28px 20px 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ─── Resumo do agendamento ─────────────────────────────── */
+.pag-resumo h2 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: #ffffff;
+}
+
+.pag-resumo-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #111c30;
+  border: 1px solid #1e2e48;
+  border-radius: 18px;
+  padding: 18px;
+}
+
+.pag-resumo-icone {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: #1a3460;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pag-resumo-icone i {
+  color: #4f8cff;
+  font-size: 22px;
+}
+
+.pag-resumo-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.pag-servico-nome {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pag-resumo-detalhe {
+  font-size: 13px;
+  color: #7f8ca7;
+  margin-top: 4px;
+}
+
+.pag-preco {
+  font-size: 18px;
+  font-weight: 700;
+  color: #4f8cff;
+  flex-shrink: 0;
+}
+
+/* ─── Confirmação de pagamento no local ─────────────────── */
+.pag-local-container {
+  text-align: center;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.pag-local-container > i {
+  font-size: 56px;
+  color: #4f8cff;
+}
+
+.pag-local-container h3 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.pag-local-container p {
+  font-size: 15px;
+  color: #7f8ca7;
+  line-height: 1.6;
+  max-width: 300px;
+}
+
+/* Badges dos métodos de pagamento aceitos */
+.pag-metodos {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.pag-metodos span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #111c30;
+  border: 1px solid #1e2e48;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 14px;
+  color: #c4cfe6;
+}
+
+.pag-metodos i {
+  color: #4f8cff;
+  font-size: 15px;
+}
+
+/* ─── Footer fixo com botão finalizar ───────────────────── */
+.pag-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px 20px;
+  background: linear-gradient(to top, #08111f 80%, transparent);
+}
+
+.pag-finalizar-btn {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  display: block;
+  padding: 18px;
+  border: none;
+  border-radius: 16px;
+  background: linear-gradient(90deg, #2563eb, #3b82f6);
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 0.2s, transform 0.2s;
+}
+
+.pag-finalizar-btn:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
