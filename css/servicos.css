@@ -1,9 +1,9 @@
 @charset "UTF-8";
 
 :root {
-    --cor-background: #111827;
-    --primary-1: #2563eb;
-    --secudary-1: #9ca3af;
+  --cor-background: #111827;
+  --primary-1: #2563eb;
+  --secudary-1: #9ca3af;
 }
 
 /* ===== HEADER ===== */
@@ -11,99 +11,96 @@
 /*===HEADER===*/
 
 .topo {
-    position: relative;
-    padding: 20px;
-    text-align: center; /* centraliza o título */
-    font-size: 15px;
+  position: relative;
+  padding: 20px;
+  text-align: center; /* centraliza o título */
+  font-size: 15px;
 }
 
 .voltar {
-    position: absolute;
-    top: 30px;
-    left: 20px;
-    color: white;
-    font-size: 20px;
-    text-decoration: none;
+  position: absolute;
+  top: 30px;
+  left: 20px;
+  color: white;
+  font-size: 20px;
+  text-decoration: none;
 }
 
 #boasVindas {
-    margin-top: 70px;
-    text-align: left;
-    color: #9ca3af;
+  margin-top: 70px;
+  text-align: left;
+  color: #9ca3af;
 }
 
 .nome-cliente {
-    color: var(--primary-1);
-    font-weight: bold;
-    font-size: 1.3em;
+  color: var(--primary-1);
+  font-weight: bold;
+  font-size: 1.3em;
 }
 
 /*===SERVIÇOS===*/
 
 .servicos {
-    padding: 20px;
+  padding: 20px;
 }
 
 .card-servico {
-    display: flex;
-    align-items: center;
-    gap:15px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
 
-    background: #111827;
-    padding: 15px;
+  background: #111827;
+  padding: 15px;
 
-    border-radius: 15px;
+  border-radius: 15px;
 
-    margin-bottom: 15px;
+  margin-bottom: 15px;
 
-    cursor: pointer;
+  cursor: pointer;
 
-    border: 2px solid transparent;
+  border: 2px solid transparent;
 }
 
 .card-servico img {
-    width: 60px;
-    height: 60px;
-    border-radius: 10px;
-    object-fit: cover;
+  width: 60px;
+  height: 60px;
+  border-radius: 10px;
+  object-fit: cover;
 }
 
 .card-servico.ativo {
-    border:2px solid var(--primary-1);
-    margin-top: 10px;
+  border: 2px solid var(--primary-1);
+  margin-top: 10px;
 }
 
 .info h3 {
-    margin: 0;
+  margin: 0;
 }
 
 .info {
-    margin: 0;
-    color: #9ca3af;
+  margin: 0;
+  color: #9ca3af;
 }
 
 /*radio (circulo).*/
 
 /*Circulo para seleção do serviço*/
 
-.radio{
+.radio {
+  margin-left: auto;
 
-margin-left:auto;
+  width: 22px;
+  height: 22px;
 
-width:22px;
-height:22px;
+  border-radius: 50%;
 
-border-radius:50%;
-
-border:2px solid var(--primary-1);
-
+  border: 2px solid var(--primary-1);
 }
 
 /*Quando o serviço for selecionado.*/
 .card-servico.ativo .radio {
-    background: var(--primary-1);
+  background: var(--primary-1);
 }
-
 
 /*==DATAS E HORÁRIOS==*/
 
@@ -112,207 +109,200 @@ border:2px solid var(--primary-1);
 /*Regua datas*/
 
 .datas {
-    padding: 20px;
+  padding: 20px;
 }
 
-
 .regua-datas {
-    display: flex;
-    gap:10px;
-    margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
 
-    overflow-x:auto;
+  overflow-x: auto;
 
-    padding-bottom: 10px;
+  padding-bottom: 10px;
 }
 
 .regua-datas::-webkit-scrollbar {
-    height: 6px;
+  height: 6px;
 }
 
 .regua-datas::-webkit-scrollbar-thumb {
-    background: #374151;
-    border-radius: 10px;
+  background: #374151;
+  border-radius: 10px;
 }
 
 .datas h2 {
-    margin-bottom: 5px;
+  margin-bottom: 5px;
 }
 
 .dia {
-    min-width: 70px;
-    background: #111827;
-    border: 1px solid #374151;
-    border-radius: 12px;
-    padding: 10px;
-    text-align: center;
-    cursor: pointer;
-    color: white;
+  min-width: 70px;
+  background: #111827;
+  border: 1px solid #374151;
+  border-radius: 12px;
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+  color: white;
 }
 
 .dia:hover {
-    border-color: var(--primary-1);
+  border-color: var(--primary-1);
 }
 
 .dia span {
-    display: block;
-    font-size: 14px;
-    color: #9ca3af;
+  display: block;
+  font-size: 14px;
+  color: #9ca3af;
 }
 
-.dia strong { 
-    font-size: 18px;
+.dia strong {
+  font-size: 18px;
 }
 
 .dia.ativo {
-    background: var(--primary-1);
-    border: none;
+  background: var(--primary-1);
+  border: none;
 }
 
 .abrir-calendario {
-    min-width: 60px;
-    border-radius: 12px;
-    border: 1px solid #374151;
-    background: transparent;
-    color: var(--secudary-1);
-    font-size: 20px;
-    cursor: pointer;
+  min-width: 60px;
+  border-radius: 12px;
+  border: 1px solid #374151;
+  background: transparent;
+  color: var(--secudary-1);
+  font-size: 20px;
+  cursor: pointer;
 }
 
 .input-calendario {
-    display: none;
+  display: none;
 }
 
-
 #reguaDatas {
-    border-radius: var(--primary-1);
+  border-radius: var(--primary-1);
 }
 
 /*HORA*/
 
 .horarios {
-    padding: 20px;
-    padding-bottom: 170px;
+  padding: 20px;
+  padding-bottom: 170px;
 }
 
 .periodo-manha,
 .periodo-tarde,
 .periodo-noite {
-    margin-bottom: 28px;
+  margin-bottom: 28px;
 }
 
 .titulo-periodo {
-    font-size: 13px;
-    letter-spacing: 2px;
-    color: #9ca3af;
-    margin-bottom: 10px;
+  font-size: 13px;
+  letter-spacing: 2px;
+  color: #9ca3af;
+  margin-bottom: 10px;
 }
 
 .horas {
-    display: grid;
-    grid-template-columns: repeat(4,1fr);
-    gap: 10px;
-    
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
 }
 
-
 .hora {
-    padding:14px;
-    border-radius:12px;
-    border:1px solid #374151;
-    background:transparent;
-    color:white;
-    font-size:16px;
-    cursor:pointer;
-    transition:0.2s;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid #374151;
+  background: transparent;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.2s;
 }
 
 .hora:hover {
-    border-color: var(--primary-1);
+  border-color: var(--primary-1);
 }
 
 /* botão hora selecionado */
 .hora.ativo {
-    background: var(--primary-1);
-    border: none;
+  background: var(--primary-1);
+  border: none;
 }
 
 /* botão que está desabilitado */
 .hora.desabilitado {
-    opacity: 0.4;
-    cursor: not-allowed
+  opacity: 0.4;
+  cursor: not-allowed;
 }
-
 
 /*Footer*/
 
 .confirmacao {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    min-height: 120px;
-    background: #0b1320;
-    padding: 20px;
-    border-top: 1px solid #1e293b;
-    z-index: 1000;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  min-height: 120px;
+  background: #0b1320;
+  padding: 20px;
+  border-top: 1px solid #1e293b;
+  z-index: 1000;
 }
 
 #confirmar:hover i {
-    transform: translateX(5px);
-    transition: 0.3s;
+  transform: translateX(5px);
+  transition: 0.3s;
 }
 
 .total {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
 }
 
 #confirmar {
-    width: 100%;
-    padding: 15px;
-    border: none;
-    border-radius: 10px;
-    background: var(--primary-1);
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 10px;
+  background: var(--primary-1);
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 #resumoHorario {
-    font-size: 13px;
-    opacity: 0.8;
+  font-size: 13px;
+  opacity: 0.8;
 }
 
 @media (min-width: 768px) {
-.datas {
+  .datas {
     justify-items: center;
-}
-.datas h2 {
+  }
+  .datas h2 {
     margin-bottom: 10px;
-}
+  }
 
-.topo {
+  .topo {
     position: relative;
     padding: 20px;
     text-align: center; /* centraliza o título */
-}
+  }
 
-.voltar {
+  .voltar {
     position: absolute;
     top: 20px;
     left: 20px;
     color: white;
     font-size: 20px;
     text-decoration: none;
+  }
 }
-
-}
-
