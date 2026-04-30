@@ -24,7 +24,7 @@ if (!supabaseUrl || !supabaseKey) {
 const db = supabase.createClient(supabaseUrl, supabaseKey);
 
 //Salvar o agendamento no banco de dados
-async function salvarAgendamento(servico, data, hora, cliente) {
+async function salvarAgendamento(servico, data, hora, cliente, telefone) {
   try {
     //Verificar se o horário já foi agendado
     const { data: existente, error: erroBusca } = await db
@@ -52,6 +52,8 @@ async function salvarAgendamento(servico, data, hora, cliente) {
         dados: data,
         hora: hora,
         cliente: cliente,
+        telefone: telefone ?? null,
+        lembrete_enviado: false,
       },
     ]);
 
@@ -283,6 +285,7 @@ const confirmar = document.getElementById("confirmar");
 
 //Buscam o nome atualizado do localStorage no momento do clique
 const nomeAtual = localStorage.getItem("nomeCliente");
+const telefoneAtual = localStorage.getItem("telefoneCliente");
 
 confirmar.addEventListener("click", async () => {
   //Pegar serviço selecionado (exemplo: Corte, Barba etc)
@@ -319,6 +322,7 @@ confirmar.addEventListener("click", async () => {
     dataSelecionada,
     horaSelecionada,
     nomeAtual,
+    telefoneAtual,
   );
 
   if (!sucesso) return;
