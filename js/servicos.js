@@ -23,9 +23,28 @@ if (!supabaseUrl || !supabaseKey) {
 //Aqui liga o site ao banco de dados, usando a URL e a Chave.
 const db = supabase.createClient(supabaseUrl, supabaseKey);
 
+function formatarDataLocal(data) {
+  const ano = data.getFullYear();
+  const mes = String(data.getMonth() + 1).padStart(2, "0");
+  const dia = String(data.getDate()).padStart(2, "0");
+  return `${ano}-${mes}-${dia}`;
+}
+
+function horarioJaPassou(dataISO, hora) {
+  if (!dataISO || !hora) return true;
+
+  const dataHorario = new Date(`${dataISO}T${hora}:00`);
+  return dataHorario <= new Date();
+}
+
 //Salvar o agendamento no banco de dados
 async function salvarAgendamento(servico, data, hora, cliente, telefone) {
   try {
+    if (horarioJaPassou(data, hora)) {
+      alert("Este horario ja passou. Escolha outro horario disponivel.");
+      return false;
+    }
+
     //Verificar se o horário já foi agendado
     const { data: existente, error: erroBusca } = await db
       .from("agendamentos")
@@ -89,27 +108,15 @@ async function carregarHorariosOcupados(dataSelecionada) {
     //Se ocorrer erro na consulta
     if (error) {
       console.log("Erro ao buscar horarios:", error);
+      atualizarDisponibilidadeHorarios(dataSelecionada);
       return;
     }
 
-    //Remove bloqueio antigo antes de aplicar novos
-    horarios.forEach((h) => {
-      h.classList.remove("desabilitado");
-    });
-
-    //Percorre todos os horários retornados do banco
-    data.forEach((agendamento) => {
-      const horaAgendada = agendamento.hora;
-
-      //Comparar com os botões da tela
-      horarios.forEach((botao) => {
-        if (botao.textContent === horaAgendada) {
-          botao.classList.add("desabilitado");
-        }
-      });
-    });
+    const horariosOcupados = data.map((agendamento) => agendamento.hora);
+    atualizarDisponibilidadeHorarios(dataSelecionada, horariosOcupados);
   } catch (error) {
     console.error("Falha de rede ao carregar horarios:", error);
+    atualizarDisponibilidadeHorarios(dataSelecionada);
   }
 }
 
@@ -123,19 +130,7 @@ function obterDataSelecionada() {
 
   if (!diaAtivo) return null;
 
-  const hoje = new Date();
-  const diaNumero = Number(diaAtivo.querySelector("strong").textContent);
-
-  const data = new Date(hoje.getFullYear(), hoje.getMonth(), diaNumero);
-
-  // Usa componentes locais em vez de toISOString() para evitar
-  // deslocamento de fuso horário (Brasil é UTC-3, o que faria
-  // toISOString() retornar o dia anterior à meia-noite).
-  const ano = data.getFullYear();
-  const mes = String(data.getMonth() + 1).padStart(2, "0");
-  const dia = String(data.getDate()).padStart(2, "0");
-
-  return `${ano}-${mes}-${dia}`;
+  return diaAtivo.dataset.data;
 }
 
 //abrir o whatsapp
@@ -174,6 +169,8 @@ function gerarDias() {
 
     const botao = document.createElement("button");
     botao.classList.add("dia");
+    botao.type = "button";
+    botao.dataset.data = formatarDataLocal(data);
 
     // Destacar o dia atual automaticamente
     if (i === 0) {
@@ -213,7 +210,7 @@ const abrirCalendario = document.getElementById("abrirCalendario");
 const seletorData = document.getElementById("seletorData");
 
 // impedir selecionar datas passadas
-seletorData.min = new Date().toISOString().split("T")[0];
+seletorData.min = formatarDataLocal(new Date());
 
 abrirCalendario.addEventListener("click", () => {
   seletorData.showPicker();
@@ -222,9 +219,38 @@ abrirCalendario.addEventListener("click", () => {
 /* === SELEÇÃO DE HORÁRIOS === */
 const horarios = document.querySelectorAll(".hora");
 
+function atualizarDisponibilidadeHorarios(dataSelecionada, horariosOcupados = []) {
+  const ocupados = new Set(horariosOcupados);
+  const horaAtiva = document.querySelector(".hora.ativo");
+
+  horarios.forEach((botao) => {
+    const hora = botao.textContent.trim();
+    const passou = horarioJaPassou(dataSelecionada, hora);
+    const ocupado = ocupados.has(hora);
+    const desabilitado = passou || ocupado;
+
+    botao.classList.toggle("desabilitado", desabilitado);
+    botao.disabled = desabilitado;
+
+    if (desabilitado) {
+      botao.classList.remove("ativo");
+      botao.title = "Horario indisponivel";
+      botao.setAttribute("aria-disabled", "true");
+      return;
+    }
+
+    botao.removeAttribute("title");
+    botao.removeAttribute("aria-disabled");
+  });
+
+  if (horaAtiva?.classList.contains("desabilitado")) {
+    resumoHorario.textContent = "";
+  }
+}
+
 horarios.forEach((hora) => {
   hora.addEventListener("click", () => {
-    if (hora.classList.contains("desabilitado")) return;
+    if (hora.classList.contains("desabilitado") || hora.disabled) return;
 
     const ativo = document.querySelector(".hora.ativo");
 
@@ -313,6 +339,12 @@ confirmar.addEventListener("click", async () => {
   //Pegar hora
   const horaSelecionada = horaAtiva.textContent;
 
+  if (horarioJaPassou(dataSelecionada, horaSelecionada)) {
+    alert("Este horario ja passou. Escolha outro horario disponivel.");
+    carregarHorariosOcupados(dataSelecionada);
+    return;
+  }
+
   /* =============================
     SALVAR NO BANCO DE DADOS
     ============================= */
@@ -368,12 +400,17 @@ db.channel("agendamentos-realtime") // Cria um canal de comunicação
     },
 
     (payload) => {
+      const dataSelecionada = obterDataSelecionada();
+      if (payload.new.dados !== dataSelecionada) return;
+
       // Pega o horário que acabou de ser ocupado e desabilita o botão na tela
       const novoHorario = payload.new.hora;
 
       horarios.forEach((botao) => {
         if (botao.textContent === novoHorario) {
           botao.classList.add("desabilitado");
+          botao.disabled = true;
+          botao.title = "Horario indisponivel";
         }
       });
     },

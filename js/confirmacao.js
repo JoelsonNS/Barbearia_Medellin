@@ -11,8 +11,8 @@
 // Altere o endereço e a query quando o endereço real estiver definido.
 const BARBEARIA = {
   nome: "Medellin Barbearia",
-  endereco: "Recife - PE",
-  mapsQuery: "Medellin+Barbearia+Recife+PE",
+  endereco: "Rua Ana Rosa, 512 A - Maurício de Nassau, Caruaru - PE",
+  mapsQuery: "Rua Ana Rosa, 512 A, Maurício de Nassau, Caruaru, PE, Brasil",
 };
 
 // ─── Leitura dos dados ───────────────────────────────────────
