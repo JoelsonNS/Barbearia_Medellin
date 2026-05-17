@@ -1,5 +1,27 @@
 # Sistema de agendamento para barbearia
 
+## Corrigir erro ao confirmar agendamento
+
+Se ao clicar em **Confirmar Agendamento** aparecer o erro:
+
+```text
+Could not find the 'lembrete_enviado' column of 'agendamentos' in the schema cache
+```
+
+significa que o JavaScript esta tentando salvar um campo chamado
+`lembrete_enviado`, mas essa coluna ainda nao existe na tabela
+`agendamentos` do Supabase.
+
+Para corrigir:
+
+1. Abra o Supabase Dashboard do projeto.
+2. Va em **SQL Editor**.
+3. Execute o arquivo `supabase/migrations/20260515_fix_agendamentos_lembrete.sql`.
+4. Recarregue a pagina `servicos.html` e tente confirmar novamente.
+
+Esse campo e usado pelo lembrete de WhatsApp para marcar se o cliente ja
+recebeu a mensagem antes do horario agendado.
+
 ## Fluxo de Branches
 
 Atualmente o projeto utiliza um fluxo simples com a `main` como branch principal e branches separadas para cada funcionalidade ou correção.
