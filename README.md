@@ -19,8 +19,47 @@ Para corrigir:
 3. Execute o arquivo `supabase/migrations/20260515_fix_agendamentos_lembrete.sql`.
 4. Recarregue a pagina `servicos.html` e tente confirmar novamente.
 
-Esse campo e usado pelo lembrete de WhatsApp para marcar se o cliente ja
-recebeu a mensagem antes do horario agendado.
+Esse campo foi criado para a estrategia anterior de lembrete por WhatsApp.
+No fluxo atual, o lembrete principal e feito pelo Google Calendar ou Apple
+Calendar na tela de confirmacao.
+
+## Lembretes de agendamento
+
+### Estrategia atual: calendario do cliente
+
+Atualmente, o projeto usa a tela `confirmacao.html` para oferecer ao cliente
+um botao de adicionar o agendamento ao calendario.
+
+O comportamento esta implementado em `js/confirmacao.js`:
+
+- Em iPhone/iPad, o sistema gera um arquivo `.ics`, que pode ser aberto no
+  Apple Calendar.
+- Em Android ou desktop, o sistema abre o Google Calendar com o evento
+  preenchido.
+- O evento leva o titulo `✂️ Meu Corte na Medellin Barbearia`.
+- O arquivo `.ics` inclui um aviso de 30 minutos antes do horario.
+
+Com essa estrategia, nao e necessario usar uma API de WhatsApp para lembrar o
+cliente neste momento.
+
+### Funcao preservada para uso futuro
+
+A pasta `supabase/functions/enviar-lembrete` esta preservada no projeto, mas
+nao e usada no fluxo atual.
+
+Ela foi criada para uma estrategia anterior: enviar lembretes automaticamente
+por WhatsApp usando uma API externa, como Z-API, Evolution API ou outra
+integracao semelhante.
+
+Enquanto essa funcionalidade nao for retomada, nao e necessario:
+
+- publicar a funcao `enviar-lembrete` no Supabase;
+- configurar secrets da Edge Function;
+- criar cron job para executar a funcao;
+- contratar ou instalar uma API de WhatsApp.
+
+Essa pasta pode continuar no repositorio como base para uma futura evolucao,
+caso o projeto volte a precisar de lembretes automaticos pelo servidor.
 
 ## Fluxo de Branches
 

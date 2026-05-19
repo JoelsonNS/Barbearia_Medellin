@@ -163,12 +163,13 @@
   gap: 16px;
 }
 
-/* Botão azul principal "Ir pelo Maps" */
-.conf-btn-maps {
+/* Botões principais */
+.conf-btn-maps,
+.conf-btn-calendario {
   width: 100%;
   padding: 18px;
+  border: none;
   border-radius: 16px;
-  background: linear-gradient(90deg, #2563eb, #3b82f6);
   color: #ffffff;
   font-size: 16px;
   font-weight: 700;
@@ -177,12 +178,23 @@
   align-items: center;
   justify-content: center;
   gap: 12px;
+  cursor: pointer;
+  font-family: inherit;
   transition:
     filter 0.2s,
     transform 0.15s;
 }
 
-.conf-btn-maps:hover {
+.conf-btn-maps {
+  background: linear-gradient(90deg, #2563eb, #3b82f6);
+}
+
+.conf-btn-calendario {
+  background: #0f766e;
+}
+
+.conf-btn-maps:hover,
+.conf-btn-calendario:hover {
   filter: brightness(1.1);
   transform: translateY(-1px);
 }

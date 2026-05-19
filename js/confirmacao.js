@@ -4,6 +4,7 @@
      • Ler os dados do agendamento salvos no localStorage
      • Preencher os cards de LOCAL, DATA e HORÁRIO
      • Configurar o botão "Ir pelo Maps" com o endereço real
+     • Criar evento no calendário do cliente com lembrete de 30 minutos
      • Limpar o localStorage ao fechar ou voltar ao início
    ============================================================ */
 
@@ -14,6 +15,9 @@ const BARBEARIA = {
   endereco: "Rua Ana Rosa, 512 A - Maurício de Nassau, Caruaru - PE",
   mapsQuery: "Rua Ana Rosa, 512 A, Maurício de Nassau, Caruaru, PE, Brasil",
 };
+
+const DURACAO_PADRAO_MINUTOS = 30;
+const LEMBRETE_MINUTOS = 30;
 
 // ─── Leitura dos dados ───────────────────────────────────────
 
@@ -97,6 +101,112 @@ function configurarMapa() {
     `https://www.google.com/maps/search/?api=1&query=${query}`;
 }
 
+// ─── Calendário ──────────────────────────────────────────────
+
+function criarDataHorario(dataISO, hora) {
+  return new Date(`${dataISO}T${hora}:00-03:00`);
+}
+
+function formatarDataGoogle(data) {
+  return data.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+}
+
+function formatarDataIcs(data) {
+  return formatarDataGoogle(data);
+}
+
+function escaparTextoIcs(texto) {
+  return String(texto)
+    .replace(/\\/g, "\\\\")
+    .replace(/;/g, "\\;")
+    .replace(/,/g, "\\,")
+    .replace(/\n/g, "\\n");
+}
+
+function ehDispositivoAppleMovel() {
+  return /iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
+
+function montarEventoCalendario(ag) {
+  const inicio = criarDataHorario(ag.data, ag.hora);
+  const fim = new Date(inicio.getTime() + DURACAO_PADRAO_MINUTOS * 60 * 1000);
+  const titulo = "✂️ Meu Corte na Medellin Barbearia";
+  const detalhes =
+    `Agendamento confirmado para ${ag.cliente}.\n` +
+    `Serviço: ${ag.servico}.\n` +
+    `Lembrete recomendado: ${LEMBRETE_MINUTOS} minutos antes.`;
+
+  return {
+    inicio,
+    fim,
+    titulo,
+    detalhes,
+    local: BARBEARIA.endereco,
+  };
+}
+
+function abrirGoogleCalendar(evento) {
+  const params = new URLSearchParams({
+    action: "TEMPLATE",
+    text: evento.titulo,
+    dates: `${formatarDataGoogle(evento.inicio)}/${formatarDataGoogle(evento.fim)}`,
+    details: evento.detalhes,
+    location: evento.local,
+  });
+
+  window.open(`https://calendar.google.com/calendar/render?${params}`, "_blank");
+}
+
+function abrirAppleCalendar(evento) {
+  const agora = formatarDataIcs(new Date());
+  const uid = `agendamento-${Date.now()}@medellinbarbearia`;
+  const conteudo = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Medellin Barbearia//Agendamento//PT-BR",
+    "CALSCALE:GREGORIAN",
+    "METHOD:PUBLISH",
+    "BEGIN:VEVENT",
+    `UID:${uid}`,
+    `DTSTAMP:${agora}`,
+    `DTSTART:${formatarDataIcs(evento.inicio)}`,
+    `DTEND:${formatarDataIcs(evento.fim)}`,
+    `SUMMARY:${escaparTextoIcs(evento.titulo)}`,
+    `DESCRIPTION:${escaparTextoIcs(evento.detalhes)}`,
+    `LOCATION:${escaparTextoIcs(evento.local)}`,
+    "BEGIN:VALARM",
+    `TRIGGER:-PT${LEMBRETE_MINUTOS}M`,
+    "ACTION:DISPLAY",
+    `DESCRIPTION:${escaparTextoIcs(evento.titulo)}`,
+    "END:VALARM",
+    "END:VEVENT",
+    "END:VCALENDAR",
+  ].join("\r\n");
+
+  const blob = new Blob([conteudo], { type: "text/calendar;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "agendamento-medellin.ics";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
+function configurarCalendario(ag) {
+  document.getElementById("btnCalendario").addEventListener("click", () => {
+    const evento = montarEventoCalendario(ag);
+
+    if (ehDispositivoAppleMovel()) {
+      abrirAppleCalendar(evento);
+      return;
+    }
+
+    abrirGoogleCalendar(evento);
+  });
+}
+
 // ─── Limpeza e navegação ─────────────────────────────────────
 
 /** Remove a chave do agendamento confirmado do localStorage. */
@@ -133,6 +243,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // 3. Configura o mapa embed e o link do botão Maps
   configurarMapa();
 
-  // 4. Botões de navegação (X e Voltar para o Início)
+  // 4. Botão para adicionar o evento ao calendário
+  configurarCalendario(ag);
+
+  // 5. Botões de navegação (X e Voltar para o Início)
   configurarNavegacao();
 });
