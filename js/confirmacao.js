@@ -108,7 +108,10 @@ function criarDataHorario(dataISO, hora) {
 }
 
 function formatarDataGoogle(data) {
-  return data.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  return data
+    .toISOString()
+    .replace(/[-:]/g, "")
+    .replace(/\.\d{3}/, "");
 }
 
 function formatarDataIcs(data) {
@@ -127,6 +130,7 @@ function ehDispositivoAppleMovel() {
   return /iPhone|iPad|iPod/i.test(navigator.userAgent);
 }
 
+//Cria lembrete de 30 minutos antes do horário do agendamento, com título e detalhes do evento.
 function montarEventoCalendario(ag) {
   const inicio = criarDataHorario(ag.data, ag.hora);
   const fim = new Date(inicio.getTime() + DURACAO_PADRAO_MINUTOS * 60 * 1000);
@@ -145,6 +149,7 @@ function montarEventoCalendario(ag) {
   };
 }
 
+// Abre o Google Calendar com os detalhes do evento preenchidos (em nova aba).
 function abrirGoogleCalendar(evento) {
   const params = new URLSearchParams({
     action: "TEMPLATE",
@@ -154,7 +159,10 @@ function abrirGoogleCalendar(evento) {
     location: evento.local,
   });
 
-  window.open(`https://calendar.google.com/calendar/render?${params}`, "_blank");
+  window.open(
+    `https://calendar.google.com/calendar/render?${params}`,
+    "_blank",
+  );
 }
 
 function abrirAppleCalendar(evento) {
