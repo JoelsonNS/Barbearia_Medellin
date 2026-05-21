@@ -37,29 +37,8 @@ function horarioJaPassou(dataISO, hora) {
   return dataHorario <= new Date();
 }
 
-function erroDeColunaAusente(error, coluna) {
-  return (
-    error?.code === "PGRST204" ||
-    error?.message?.includes(`'${coluna}' column`) ||
-    error?.message?.includes(`column "${coluna}"`)
-  );
-}
-
-function exibirErroAoSalvar(error) {
-  console.error("Erro real do Supabase:", error);
-
-  if (erroDeColunaAusente(error, "lembrete_enviado")) {
-    alert(
-      "Erro ao salvar: a tabela agendamentos ainda nao tem a coluna lembrete_enviado. Execute o SQL em supabase/migrations/20260515_fix_agendamentos_lembrete.sql no Supabase.",
-    );
-    return;
-  }
-
-  alert("Erro ao salvar: " + error.message);
-}
-
-//Salvar o agendamento no banco de dados
-async function salvarAgendamento(servico, data, hora, cliente, telefone) {
+//Verificar se o horario continua disponivel antes de ir para confirmacao
+async function verificarHorarioDisponivel(data, hora) {
   try {
     if (horarioJaPassou(data, hora)) {
       alert("Este horario ja passou. Escolha outro horario disponivel.");
@@ -85,26 +64,9 @@ async function salvarAgendamento(servico, data, hora, cliente, telefone) {
       return false;
     }
 
-    //Salvar no banco
-    const { error } = await db.from("agendamentos").insert([
-      {
-        servico: servico,
-        dados: data,
-        hora: hora,
-        cliente: cliente,
-        telefone: telefone ?? null,
-        lembrete_enviado: false,
-      },
-    ]);
-
-    if (error) {
-      exibirErroAoSalvar(error);
-      return false;
-    }
-
     return true;
   } catch (error) {
-    console.error("Falha de rede ao salvar agendamento:", error);
+    console.error("Falha de rede ao verificar horario:", error);
     alert(
       "Nao foi possivel conectar ao Supabase. Verifique sua internet, extensoes do navegador ou bloqueios de rede.",
     );
@@ -365,22 +327,12 @@ confirmar.addEventListener("click", async () => {
     return;
   }
 
-  /* =============================
-    SALVAR NO BANCO DE DADOS
-    ============================= */
-
-  const sucesso = await salvarAgendamento(
-    servicoSelecionado,
+  const sucesso = await verificarHorarioDisponivel(
     dataSelecionada,
     horaSelecionada,
-    nomeAtual,
-    telefoneAtual,
   );
 
   if (!sucesso) return;
-
-  horaAtiva.classList.add("desabilitado");
-  horaAtiva.classList.remove("ativo");
 
   /* =============================
     SALVAR DADOS E IR PARA PAGAMENTO
@@ -396,6 +348,7 @@ confirmar.addEventListener("click", async () => {
       data: dataSelecionada,
       hora: horaSelecionada,
       cliente: nomeAtual,
+      telefone: telefoneAtual,
     }),
   );
 

@@ -15,6 +15,23 @@ const PRECOS = {
   "Barba e Cabelo": 40,
 };
 
+// ─── Supabase ───────────────────────────────────────────────
+
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error("Variaveis do Supabase nao foram carregadas.", {
+    supabaseUrl,
+    supabaseKey: supabaseKey ? "[ok]" : undefined,
+  });
+  alert(
+    "As configuracoes do Supabase nao foram carregadas. Verifique o arquivo .env e reinicie o servidor.",
+  );
+}
+
+const db = supabase.createClient(supabaseUrl, supabaseKey);
+
 // ─── Leitura dos dados do agendamento ───────────────────────
 
 /**
@@ -43,6 +60,13 @@ function lerDadosAgendamento() {
 function formatarData(dataISO) {
   const [ano, mes, dia] = dataISO.split("-");
   return `${dia}/${mes}/${ano}`;
+}
+
+function horarioJaPassou(dataISO, hora) {
+  if (!dataISO || !hora) return true;
+
+  const dataHorario = new Date(`${dataISO}T${hora}:00`);
+  return dataHorario <= new Date();
 }
 
 /**
@@ -81,10 +105,86 @@ function notificarWhatsApp(ag) {
   window.open(url, "_blank");
 }
 
+// ─── Gravar agendamento no banco ────────────────────────────
+
+function erroDeColunaAusente(error, coluna) {
+  return (
+    error?.code === "PGRST204" ||
+    error?.message?.includes(`'${coluna}' column`) ||
+    error?.message?.includes(`column "${coluna}"`)
+  );
+}
+
+function exibirErroAoSalvar(error) {
+  console.error("Erro real do Supabase:", error);
+
+  if (erroDeColunaAusente(error, "lembrete_enviado")) {
+    alert(
+      "Erro ao salvar: a tabela agendamentos ainda nao tem a coluna lembrete_enviado. Execute o SQL em supabase/migrations/20260515_fix_agendamentos_lembrete.sql no Supabase.",
+    );
+    return;
+  }
+
+  alert("Erro ao salvar: " + error.message);
+}
+
+async function salvarAgendamento(ag) {
+  try {
+    if (horarioJaPassou(ag.data, ag.hora)) {
+      alert("Este horario ja passou. Escolha outro horario disponivel.");
+      return false;
+    }
+
+    const { data: existente, error: erroBusca } = await db
+      .from("agendamentos")
+      .select("id")
+      .eq("dados", ag.data)
+      .eq("hora", ag.hora);
+
+    if (erroBusca) {
+      console.error("Erro ao consultar agendamento existente:", erroBusca);
+      alert("Nao foi possivel verificar os horarios disponiveis.");
+      return false;
+    }
+
+    if (existente && existente.length > 0) {
+      alert(
+        "Este horario acabou de ser agendado por outra pessoa. Escolha outro horario.",
+      );
+      return false;
+    }
+
+    const { error } = await db.from("agendamentos").insert([
+      {
+        servico: ag.servico,
+        dados: ag.data,
+        hora: ag.hora,
+        cliente: ag.cliente,
+        telefone: ag.telefone ?? null,
+        lembrete_enviado: false,
+      },
+    ]);
+
+    if (error) {
+      exibirErroAoSalvar(error);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Falha de rede ao salvar agendamento:", error);
+    alert(
+      "Nao foi possivel conectar ao Supabase. Verifique sua internet, extensoes do navegador ou bloqueios de rede.",
+    );
+    return false;
+  }
+}
+
 // ─── Finalizar agendamento ───────────────────────────────────
 
 /**
  * Ao clicar em "Finalizar Agendamento":
+ * - Salva o agendamento no Supabase
  * - Notifica o barbeiro via WhatsApp
  * - Remove os dados pendentes do localStorage
  * - Redireciona para a página inicial
@@ -92,7 +192,18 @@ function notificarWhatsApp(ag) {
 function inicializarBotaoFinalizar(ag) {
   const btn = document.getElementById("btnFinalizar");
 
-  btn.addEventListener("click", () => {
+  btn.addEventListener("click", async () => {
+    btn.disabled = true;
+    btn.textContent = "Finalizando...";
+
+    const sucesso = await salvarAgendamento(ag);
+
+    if (!sucesso) {
+      btn.disabled = false;
+      btn.textContent = "Finalizar Agendamento";
+      return;
+    }
+
     // Notifica o barbeiro via WhatsApp
     notificarWhatsApp(ag);
 
