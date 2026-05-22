@@ -42,8 +42,9 @@
   padding: 20px;
 }
 
-.titulo-servicos {
-  margin-top: 25px;
+.titulo_servicos {
+  margin-top: 20px;
+  padding: 20px 0 0 0;
 }
 
 .card-servico {
