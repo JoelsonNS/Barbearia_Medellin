@@ -15,7 +15,7 @@ const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
 
 const db = supabase.createClient(supabaseUrl, supabaseKey);
 
-// ─── Mapeamento de serviço → ícone Bootstrap Icons ──────────
+// ─── Mapeamento de serviço → ícone Font Awesome ─────────────
 /**
  * Retorna a classe de ícone correspondente ao nome do serviço.
  * @param {string} servico
@@ -23,10 +23,10 @@ const db = supabase.createClient(supabaseUrl, supabaseKey);
  */
 function iconeDoServico(servico) {
   const nome = servico.toLowerCase();
-  if (nome.includes("barba")) return "bi-brush";
+  if (nome.includes("barba")) return "fa-solid fa-brush";
   if (nome.includes("pele") || nome.includes("limpeza"))
-    return "bi-emoji-sunglasses";
-  return "bi-scissors"; // padrão para cortes
+    return "fa-solid fa-face-grin-beam";
+  return "fa-solid fa-scissors"; // padrão para cortes
 }
 
 // ─── Helpers de data ─────────────────────────────────────────
@@ -147,13 +147,13 @@ function criarCardAgendamento(registro) {
   return `
     <article class="appointment-card">
       <div class="client-avatar placeholder">
-        <i class="bi bi-person-fill"></i>
+        <i class="fa-solid fa-user"></i>
       </div>
 
       <div class="appointment-info">
         <h2>${registro.cliente}</h2>
         <p class="service">
-          <i class="bi ${icone}"></i>
+          <i class="${icone}"></i>
           ${registro.servico}
         </p>
       </div>
@@ -170,7 +170,7 @@ function criarCardAgendamento(registro) {
 function criarEstadoVazio() {
   return `
     <div class="empty-state" role="status" aria-live="polite">
-      <i class="bi bi-calendar-x"></i>
+      <i class="fa-solid fa-calendar-xmark"></i>
       <p>Nenhum atendimento para este dia.</p>
     </div>
   `;
@@ -180,7 +180,7 @@ function criarEstadoVazio() {
 function criarEstadoCarregando() {
   return `
     <div class="empty-state" role="status" aria-live="polite">
-      <i class="bi bi-hourglass-split"></i>
+      <i class="fa-solid fa-hourglass-half"></i>
       <p>Carregando agendamentos…</p>
     </div>
   `;
@@ -194,7 +194,7 @@ function criarEstadoCarregando() {
 function criarEstadoErro(mensagemErro) {
   return `
     <div class="empty-state" role="alert" aria-live="assertive">
-      <i class="bi bi-exclamation-triangle"></i>
+      <i class="fa-solid fa-triangle-exclamation"></i>
       <p>Erro ao carregar agendamentos.</p>
       <small style="color:#f87171;font-size:13px;margin-top:8px;display:block">${mensagemErro}</small>
     </div>
