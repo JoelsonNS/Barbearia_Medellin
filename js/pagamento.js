@@ -3,7 +3,7 @@
    Responsável por:
      • Ler os dados do agendamento salvos no localStorage
      • Preencher o resumo na tela
-     • Notificar o barbeiro via WhatsApp ao finalizar
+     • Salvar o agendamento no Supabase ao finalizar
      • Limpar o localStorage e redirecionar para home
    ============================================================ */
 
@@ -83,28 +83,6 @@ function preencherResumo(ag) {
     : "R$ —";
 }
 
-// ─── Notificação ao barbeiro via WhatsApp ────────────────────
-
-/**
- * Abre o WhatsApp com uma mensagem pré-preenchida para o barbeiro.
- */
-function notificarWhatsApp(ag) {
-  const telefone = "5581981222018";
-  const dataFormatada = formatarData(ag.data);
-
-  const mensagem = `📅 NOVO AGENDAMENTO
-
-👤 Cliente: ${ag.cliente}
-✂ Serviço: ${ag.servico}
-📆 Data: ${dataFormatada}
-⏰ Hora: ${ag.hora}
-
-💰 Pagamento: na chegada`;
-
-  const url = `https://wa.me/${telefone}?text=${encodeURIComponent(mensagem)}`;
-  window.open(url, "_blank");
-}
-
 // ─── Gravar agendamento no banco ────────────────────────────
 
 async function salvarAgendamento(ag) {
@@ -165,7 +143,6 @@ async function salvarAgendamento(ag) {
 /**
  * Ao clicar em "Finalizar Agendamento":
  * - Salva o agendamento no Supabase
- * - Notifica o barbeiro via WhatsApp
  * - Remove os dados pendentes do localStorage
  * - Redireciona para a página inicial
  */
@@ -183,9 +160,6 @@ function inicializarBotaoFinalizar(ag) {
       btn.textContent = "Finalizar Agendamento";
       return;
     }
-
-    // Notifica o barbeiro via WhatsApp
-    notificarWhatsApp(ag);
 
     // Salva os dados com a chave esperada pela página de confirmação
     localStorage.setItem("agendamentoConfirmado", JSON.stringify(ag));
