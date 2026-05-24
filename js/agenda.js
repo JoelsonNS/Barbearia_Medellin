@@ -15,6 +15,9 @@ const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
 
 const db = supabase.createClient(supabaseUrl, supabaseKey);
 
+// Controle do toast de notificação de novo agendamento
+let toastTimer = null;
+
 // ─── Mapeamento de serviço → ícone Bootstrap Icons ──────────
 /**
  * Retorna a classe de ícone correspondente ao nome do serviço.
@@ -334,12 +337,33 @@ function inicializarLogout() {
  * Escuta novos INSERTs na tabela e re-renderiza a lista
  * automaticamente se o dia ativo for o afetado.
  */
+function exibirToastNovoAgendamento(registro) {
+  const toast = document.getElementById("novoAgendamentoToast");
+  const texto = document.getElementById("novoAgendamentoToastTexto");
+  if (!toast || !texto) return;
+
+  const cliente = registro?.cliente || "Cliente";
+  const servico = registro?.servico || "Serviço";
+  const hora = registro?.hora || "--:--";
+
+  texto.textContent = `${cliente} agendou ${servico} às ${hora}.`;
+
+  toast.classList.add("mostrar");
+
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    toast.classList.remove("mostrar");
+  }, 4000);
+}
+
 function inicializarRealtime() {
   db.channel("agenda-realtime")
     .on(
       "postgres_changes",
       { event: "INSERT", schema: "public", table: "agendamentos" },
-      () => {
+      (payload) => {
+        exibirToastNovoAgendamento(payload?.new);
+
         // Pega o dia atualmente ativo na tela e re-busca os dados
         const cardAtivo = document.querySelector(".day-card.active");
         if (cardAtivo) {
