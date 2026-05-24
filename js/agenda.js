@@ -15,7 +15,10 @@ const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
 
 const db = supabase.createClient(supabaseUrl, supabaseKey);
 
-// ─── Mapeamento de serviço → ícone Font Awesome ─────────────
+// Controle do toast de notificação de novo agendamento
+let toastTimer = null;
+
+// ─── Mapeamento de serviço → ícone Bootstrap Icons ──────────
 /**
  * Retorna a classe de ícone correspondente ao nome do serviço.
  * @param {string} servico
@@ -23,10 +26,10 @@ const db = supabase.createClient(supabaseUrl, supabaseKey);
  */
 function iconeDoServico(servico) {
   const nome = servico.toLowerCase();
-  if (nome.includes("barba")) return "fa-solid fa-brush";
+  if (nome.includes("barba")) return "bi-brush";
   if (nome.includes("pele") || nome.includes("limpeza"))
-    return "fa-solid fa-face-grin-beam";
-  return "fa-solid fa-scissors"; // padrão para cortes
+    return "bi-emoji-sunglasses";
+  return "bi-scissors"; // padrão para cortes
 }
 
 // ─── Helpers de data ─────────────────────────────────────────
@@ -147,13 +150,13 @@ function criarCardAgendamento(registro) {
   return `
     <article class="appointment-card">
       <div class="client-avatar placeholder">
-        <i class="fa-solid fa-user"></i>
+        <i class="bi bi-person-fill"></i>
       </div>
 
       <div class="appointment-info">
         <h2>${registro.cliente}</h2>
         <p class="service">
-          <i class="${icone}"></i>
+          <i class="bi ${icone}"></i>
           ${registro.servico}
         </p>
       </div>
@@ -170,7 +173,7 @@ function criarCardAgendamento(registro) {
 function criarEstadoVazio() {
   return `
     <div class="empty-state" role="status" aria-live="polite">
-      <i class="fa-solid fa-calendar-xmark"></i>
+      <i class="bi bi-calendar-x"></i>
       <p>Nenhum atendimento para este dia.</p>
     </div>
   `;
@@ -180,7 +183,7 @@ function criarEstadoVazio() {
 function criarEstadoCarregando() {
   return `
     <div class="empty-state" role="status" aria-live="polite">
-      <i class="fa-solid fa-hourglass-half"></i>
+      <i class="bi bi-hourglass-split"></i>
       <p>Carregando agendamentos…</p>
     </div>
   `;
@@ -194,7 +197,7 @@ function criarEstadoCarregando() {
 function criarEstadoErro(mensagemErro) {
   return `
     <div class="empty-state" role="alert" aria-live="assertive">
-      <i class="fa-solid fa-triangle-exclamation"></i>
+      <i class="bi bi-exclamation-triangle"></i>
       <p>Erro ao carregar agendamentos.</p>
       <small style="color:#f87171;font-size:13px;margin-top:8px;display:block">${mensagemErro}</small>
     </div>
@@ -334,12 +337,33 @@ function inicializarLogout() {
  * Escuta novos INSERTs na tabela e re-renderiza a lista
  * automaticamente se o dia ativo for o afetado.
  */
+function exibirToastNovoAgendamento(registro) {
+  const toast = document.getElementById("novoAgendamentoToast");
+  const texto = document.getElementById("novoAgendamentoToastTexto");
+  if (!toast || !texto) return;
+
+  const cliente = registro?.cliente || "Cliente";
+  const servico = registro?.servico || "Serviço";
+  const hora = registro?.hora || "--:--";
+
+  texto.textContent = `${cliente} agendou ${servico} às ${hora}.`;
+
+  toast.classList.add("mostrar");
+
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    toast.classList.remove("mostrar");
+  }, 4000);
+}
+
 function inicializarRealtime() {
   db.channel("agenda-realtime")
     .on(
       "postgres_changes",
       { event: "INSERT", schema: "public", table: "agendamentos" },
-      () => {
+      (payload) => {
+        exibirToastNovoAgendamento(payload?.new);
+
         // Pega o dia atualmente ativo na tela e re-busca os dados
         const cardAtivo = document.querySelector(".day-card.active");
         if (cardAtivo) {

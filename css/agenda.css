@@ -231,3 +231,67 @@ body {
   font-size: 20px;
   font-weight: 600;
 }
+
+/* ─── Toast: novo agendamento em tempo real ─── */
+.novo-agendamento-toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  max-width: 360px;
+  width: calc(100% - 40px);
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid #27406d;
+  background: linear-gradient(180deg, #0f1e36 0%, #0d1a2f 100%);
+  color: #f4f7ff;
+  box-shadow: 0 14px 30px rgba(4, 10, 20, 0.45);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  opacity: 0;
+  transform: translateY(-12px);
+  pointer-events: none;
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+.novo-agendamento-toast.mostrar {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.novo-agendamento-toast i {
+  font-size: 20px;
+  color: #5aa0ff;
+  margin-top: 2px;
+}
+
+.toast-conteudo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.toast-conteudo strong {
+  font-size: 14px;
+  font-weight: 700;
+  color: #e8f0ff;
+}
+
+.toast-conteudo p {
+  margin: 0;
+  color: #b8c6e3;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+@media (max-width: 640px) {
+  .novo-agendamento-toast {
+    top: 12px;
+    right: 12px;
+    width: calc(100% - 24px);
+    max-width: none;
+  }
+}
