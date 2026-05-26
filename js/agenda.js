@@ -15,12 +15,6 @@ const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
 
 const db = supabase.createClient(supabaseUrl, supabaseKey);
 
-<<<<<<< HEAD
-// Controle do toast de notificação de novo agendamento
-let toastTimer = null;
-
-// ─── Mapeamento de serviço → ícone Bootstrap Icons ──────────
-=======
 const NOTIFICACOES_STORAGE_KEY = "agendaNotificacoes";
 const MAX_NOTIFICACOES = 30;
 const DURACAO_NOTIFICACAO_FLUTUANTE_MS = 10000;
@@ -28,7 +22,6 @@ let notificacoes = [];
 let timeoutNotificacaoFlutuante = null;
 
 // ─── Mapeamento de serviço → ícone Font Awesome ─────────────
->>>>>>> fix/agenda
 /**
  * Retorna a classe de ícone correspondente ao nome do serviço.
  * @param {string} servico
@@ -347,25 +340,6 @@ function inicializarLogout() {
  * Escuta novos INSERTs na tabela e re-renderiza a lista
  * automaticamente se o dia ativo for o afetado.
  */
-<<<<<<< HEAD
-function exibirToastNovoAgendamento(registro) {
-  const toast = document.getElementById("novoAgendamentoToast");
-  const texto = document.getElementById("novoAgendamentoToastTexto");
-  if (!toast || !texto) return;
-
-  const cliente = registro?.cliente || "Cliente";
-  const servico = registro?.servico || "Serviço";
-  const hora = registro?.hora || "--:--";
-
-  texto.textContent = `${cliente} agendou ${servico} às ${hora}.`;
-
-  toast.classList.add("mostrar");
-
-  if (toastTimer) clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => {
-    toast.classList.remove("mostrar");
-  }, 4000);
-=======
 function salvarNotificacoesLocal() {
   localStorage.setItem(
     NOTIFICACOES_STORAGE_KEY,
@@ -527,7 +501,6 @@ function mostrarNotificacaoFlutuante(registro) {
     toast.style.transform = "translateY(-8px)";
     setTimeout(() => toast.remove(), 220);
   }, DURACAO_NOTIFICACAO_FLUTUANTE_MS);
->>>>>>> fix/agenda
 }
 
 function inicializarRealtime() {
@@ -536,12 +509,8 @@ function inicializarRealtime() {
       "postgres_changes",
       { event: "INSERT", schema: "public", table: "agendamentos" },
       (payload) => {
-<<<<<<< HEAD
-        exibirToastNovoAgendamento(payload?.new);
-=======
         adicionarNotificacao(payload?.new);
         mostrarNotificacaoFlutuante(payload?.new);
->>>>>>> fix/agenda
 
         // Pega o dia atualmente ativo na tela e re-busca os dados
         const cardAtivo = document.querySelector(".day-card.active");
