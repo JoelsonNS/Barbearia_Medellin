@@ -17,7 +17,9 @@ const db = supabase.createClient(supabaseUrl, supabaseKey);
 
 const NOTIFICACOES_STORAGE_KEY = "agendaNotificacoes";
 const MAX_NOTIFICACOES = 30;
+const DURACAO_NOTIFICACAO_FLUTUANTE_MS = 10000;
 let notificacoes = [];
+let timeoutNotificacaoFlutuante = null;
 
 // ─── Mapeamento de serviço → ícone Font Awesome ─────────────
 /**
@@ -454,6 +456,53 @@ function inicializarPainelNotificacoes() {
   });
 }
 
+function mostrarNotificacaoFlutuante(registro) {
+  const existente = document.getElementById("toastNovoAgendamento");
+  if (existente) existente.remove();
+
+  const toast = document.createElement("div");
+  toast.id = "toastNovoAgendamento";
+  toast.setAttribute("role", "status");
+  toast.setAttribute("aria-live", "polite");
+  toast.style.position = "fixed";
+  toast.style.top = "20px";
+  toast.style.right = "20px";
+  toast.style.zIndex = "9999";
+  toast.style.maxWidth = "340px";
+  toast.style.background = "#111827";
+  toast.style.color = "#f9fafb";
+  toast.style.border = "1px solid rgba(255,255,255,.1)";
+  toast.style.borderRadius = "12px";
+  toast.style.boxShadow = "0 12px 30px rgba(0,0,0,.35)";
+  toast.style.padding = "12px 14px";
+  toast.style.fontFamily = "inherit";
+  toast.style.opacity = "0";
+  toast.style.transform = "translateY(-8px)";
+  toast.style.transition = "opacity .2s ease, transform .2s ease";
+
+  toast.innerHTML = `
+    <strong style="display:block;margin-bottom:4px;">Novo agendamento</strong>
+    <span style="font-size:14px;line-height:1.4;">${montarMensagemNotificacao(registro)}</span>
+  `;
+
+  document.body.appendChild(toast);
+
+  requestAnimationFrame(() => {
+    toast.style.opacity = "1";
+    toast.style.transform = "translateY(0)";
+  });
+
+  if (timeoutNotificacaoFlutuante) {
+    clearTimeout(timeoutNotificacaoFlutuante);
+  }
+
+  timeoutNotificacaoFlutuante = setTimeout(() => {
+    toast.style.opacity = "0";
+    toast.style.transform = "translateY(-8px)";
+    setTimeout(() => toast.remove(), 220);
+  }, DURACAO_NOTIFICACAO_FLUTUANTE_MS);
+}
+
 function inicializarRealtime() {
   db.channel("agenda-realtime")
     .on(
@@ -461,6 +510,7 @@ function inicializarRealtime() {
       { event: "INSERT", schema: "public", table: "agendamentos" },
       (payload) => {
         adicionarNotificacao(payload?.new);
+        mostrarNotificacaoFlutuante(payload?.new);
 
         // Pega o dia atualmente ativo na tela e re-busca os dados
         const cardAtivo = document.querySelector(".day-card.active");
