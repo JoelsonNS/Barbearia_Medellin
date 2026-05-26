@@ -15,6 +15,10 @@ const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
 
 const db = supabase.createClient(supabaseUrl, supabaseKey);
 
+const NOTIFICACOES_STORAGE_KEY = "agendaNotificacoes";
+const MAX_NOTIFICACOES = 30;
+let notificacoes = [];
+
 // ─── Mapeamento de serviço → ícone Font Awesome ─────────────
 /**
  * Retorna a classe de ícone correspondente ao nome do serviço.
@@ -334,12 +338,130 @@ function inicializarLogout() {
  * Escuta novos INSERTs na tabela e re-renderiza a lista
  * automaticamente se o dia ativo for o afetado.
  */
+function salvarNotificacoesLocal() {
+  localStorage.setItem(
+    NOTIFICACOES_STORAGE_KEY,
+    JSON.stringify(notificacoes.slice(0, MAX_NOTIFICACOES)),
+  );
+}
+
+function carregarNotificacoesLocal() {
+  try {
+    const raw = localStorage.getItem(NOTIFICACOES_STORAGE_KEY);
+    if (!raw) return [];
+    const dados = JSON.parse(raw);
+    return Array.isArray(dados) ? dados : [];
+  } catch {
+    return [];
+  }
+}
+
+function formatarDataHoraNotificacao(iso) {
+  const data = new Date(iso);
+  if (Number.isNaN(data.getTime())) return "agora";
+  return data.toLocaleString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function montarMensagemNotificacao(registro) {
+  const cliente = registro?.cliente || "Cliente";
+  const servico = registro?.servico || "Serviço";
+  const hora = registro?.hora || "--:--";
+  return `${cliente} agendou ${servico} às ${hora}.`;
+}
+
+function renderizarPainelNotificacoes() {
+  const lista = document.getElementById("notificationsList");
+  if (!lista) return;
+
+  if (!notificacoes.length) {
+    lista.innerHTML =
+      '<p class="notifications-empty">Nenhuma notificação ainda.</p>';
+    return;
+  }
+
+  lista.innerHTML = notificacoes
+    .map(
+      (item) => `
+        <article class="notification-item">
+          <strong>Novo agendamento</strong>
+          <p>${item.mensagem}</p>
+          <small>${formatarDataHoraNotificacao(item.criadoEm)}</small>
+        </article>
+      `,
+    )
+    .join("");
+}
+
+function atualizarIndicadorNotificacoes() {
+  const dot = document.getElementById("notificationDot");
+  if (!dot) return;
+
+  const temNaoLidas = notificacoes.some((item) => !item.lida);
+  dot.classList.toggle("hidden", !temNaoLidas);
+}
+
+function marcarNotificacoesComoLidas() {
+  notificacoes = notificacoes.map((item) => ({ ...item, lida: true }));
+  salvarNotificacoesLocal();
+  atualizarIndicadorNotificacoes();
+}
+
+function adicionarNotificacao(registro) {
+  const nova = {
+    mensagem: montarMensagemNotificacao(registro),
+    criadoEm: new Date().toISOString(),
+    lida: false,
+  };
+
+  notificacoes = [nova, ...notificacoes].slice(0, MAX_NOTIFICACOES);
+  salvarNotificacoesLocal();
+  renderizarPainelNotificacoes();
+  atualizarIndicadorNotificacoes();
+}
+
+function inicializarPainelNotificacoes() {
+  const botao = document.getElementById("btnNotificacoes");
+  const painel = document.getElementById("painelNotificacoes");
+  if (!botao || !painel) return;
+
+  renderizarPainelNotificacoes();
+  atualizarIndicadorNotificacoes();
+
+  botao.addEventListener("click", (evento) => {
+    evento.stopPropagation();
+
+    const aberto = !painel.classList.contains("hidden");
+    painel.classList.toggle("hidden", aberto);
+    botao.setAttribute("aria-expanded", String(!aberto));
+
+    if (aberto) return;
+    marcarNotificacoesComoLidas();
+  });
+
+  document.addEventListener("click", (evento) => {
+    const clicouNoBotao = botao.contains(evento.target);
+    const clicouNoPainel = painel.contains(evento.target);
+    if (clicouNoBotao || clicouNoPainel) return;
+
+    painel.classList.add("hidden");
+    botao.setAttribute("aria-expanded", "false");
+  });
+}
+
 function inicializarRealtime() {
   db.channel("agenda-realtime")
     .on(
       "postgres_changes",
       { event: "INSERT", schema: "public", table: "agendamentos" },
-      () => {
+      (payload) => {
+        adicionarNotificacao(payload?.new);
+
         // Pega o dia atualmente ativo na tela e re-busca os dados
         const cardAtivo = document.querySelector(".day-card.active");
         if (cardAtivo) {
@@ -364,11 +486,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   const dataHoje = getDataFormatada(0);
+  notificacoes = carregarNotificacoesLocal().slice(0, MAX_NOTIFICACOES);
 
   renderizarSliderDias(dataHoje); // monta os botões de dias
   await renderizarAgendamentos(dataHoje); // busca dados reais do banco
   inicializarSliderDias(); // ativa navegação por dia
   inicializarDragScroll(); // habilita arraste com mouse no desktop
   inicializarLogout(); // conecta o botão voltar ao signOut
+  inicializarPainelNotificacoes(); // inicializa sino e painel de notificações
   inicializarRealtime(); // escuta novos agendamentos ao vivo
 });
