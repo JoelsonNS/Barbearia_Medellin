@@ -20,6 +20,24 @@
         >
           <i class="fa-solid fa-arrow-left"></i>
         </a>
+
+        <div class="header-actions">
+          <button
+            id="btnNotificacoes"
+            class="notification-button"
+            type="button"
+            aria-label="Abrir notificações"
+            aria-expanded="false"
+            aria-controls="painelNotificacoes"
+          >
+            <i class="fa-solid fa-bell"></i>
+            <span
+              id="notificationDot"
+              class="notification-dot hidden"
+              aria-hidden="true"
+            ></span>
+          </button>
+        </div>
       </header>
 
       <section class="agenda-content">
@@ -65,6 +83,7 @@
       </section>
     </main>
 
+<<<<<<< HEAD
     <div
       id="novoAgendamentoToast"
       class="novo-agendamento-toast"
@@ -78,6 +97,20 @@
         <p id="novoAgendamentoToastTexto">Você recebeu um novo agendamento.</p>
       </div>
     </div>
+=======
+    <aside
+      id="painelNotificacoes"
+      class="notifications-panel hidden"
+      aria-label="Lista de notificações"
+    >
+      <header class="notifications-header">
+        <h2>Notificações</h2>
+      </header>
+      <div id="notificationsList" class="notifications-list">
+        <p class="notifications-empty">Nenhuma notificação ainda.</p>
+      </div>
+    </aside>
+>>>>>>> fix/agenda
 
     <!-- Supabase SDK (deve carregar antes dos módulos JS) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

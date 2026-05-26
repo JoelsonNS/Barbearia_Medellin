@@ -15,10 +15,20 @@ const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
 
 const db = supabase.createClient(supabaseUrl, supabaseKey);
 
+<<<<<<< HEAD
 // Controle do toast de notificação de novo agendamento
 let toastTimer = null;
 
 // ─── Mapeamento de serviço → ícone Bootstrap Icons ──────────
+=======
+const NOTIFICACOES_STORAGE_KEY = "agendaNotificacoes";
+const MAX_NOTIFICACOES = 30;
+const DURACAO_NOTIFICACAO_FLUTUANTE_MS = 10000;
+let notificacoes = [];
+let timeoutNotificacaoFlutuante = null;
+
+// ─── Mapeamento de serviço → ícone Font Awesome ─────────────
+>>>>>>> fix/agenda
 /**
  * Retorna a classe de ícone correspondente ao nome do serviço.
  * @param {string} servico
@@ -337,6 +347,7 @@ function inicializarLogout() {
  * Escuta novos INSERTs na tabela e re-renderiza a lista
  * automaticamente se o dia ativo for o afetado.
  */
+<<<<<<< HEAD
 function exibirToastNovoAgendamento(registro) {
   const toast = document.getElementById("novoAgendamentoToast");
   const texto = document.getElementById("novoAgendamentoToastTexto");
@@ -354,6 +365,169 @@ function exibirToastNovoAgendamento(registro) {
   toastTimer = setTimeout(() => {
     toast.classList.remove("mostrar");
   }, 4000);
+=======
+function salvarNotificacoesLocal() {
+  localStorage.setItem(
+    NOTIFICACOES_STORAGE_KEY,
+    JSON.stringify(notificacoes.slice(0, MAX_NOTIFICACOES)),
+  );
+}
+
+function carregarNotificacoesLocal() {
+  try {
+    const raw = localStorage.getItem(NOTIFICACOES_STORAGE_KEY);
+    if (!raw) return [];
+    const dados = JSON.parse(raw);
+    return Array.isArray(dados) ? dados : [];
+  } catch {
+    return [];
+  }
+}
+
+function formatarDataHoraNotificacao(iso) {
+  const data = new Date(iso);
+  if (Number.isNaN(data.getTime())) return "agora";
+  return data.toLocaleString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function montarMensagemNotificacao(registro) {
+  const cliente = registro?.cliente || "Cliente";
+  const servico = registro?.servico || "Serviço";
+  const hora = registro?.hora || "--:--";
+  return `${cliente} agendou ${servico} às ${hora}.`;
+}
+
+function renderizarPainelNotificacoes() {
+  const lista = document.getElementById("notificationsList");
+  if (!lista) return;
+
+  if (!notificacoes.length) {
+    lista.innerHTML =
+      '<p class="notifications-empty">Nenhuma notificação ainda.</p>';
+    return;
+  }
+
+  lista.innerHTML = notificacoes
+    .map(
+      (item) => `
+        <article class="notification-item">
+          <strong>Novo agendamento</strong>
+          <p>${item.mensagem}</p>
+          <small>${formatarDataHoraNotificacao(item.criadoEm)}</small>
+        </article>
+      `,
+    )
+    .join("");
+}
+
+function atualizarIndicadorNotificacoes() {
+  const dot = document.getElementById("notificationDot");
+  if (!dot) return;
+
+  const temNaoLidas = notificacoes.some((item) => !item.lida);
+  dot.classList.toggle("hidden", !temNaoLidas);
+}
+
+function marcarNotificacoesComoLidas() {
+  notificacoes = notificacoes.map((item) => ({ ...item, lida: true }));
+  salvarNotificacoesLocal();
+  atualizarIndicadorNotificacoes();
+}
+
+function adicionarNotificacao(registro) {
+  const nova = {
+    mensagem: montarMensagemNotificacao(registro),
+    criadoEm: new Date().toISOString(),
+    lida: false,
+  };
+
+  notificacoes = [nova, ...notificacoes].slice(0, MAX_NOTIFICACOES);
+  salvarNotificacoesLocal();
+  renderizarPainelNotificacoes();
+  atualizarIndicadorNotificacoes();
+}
+
+function inicializarPainelNotificacoes() {
+  const botao = document.getElementById("btnNotificacoes");
+  const painel = document.getElementById("painelNotificacoes");
+  if (!botao || !painel) return;
+
+  renderizarPainelNotificacoes();
+  atualizarIndicadorNotificacoes();
+
+  botao.addEventListener("click", (evento) => {
+    evento.stopPropagation();
+
+    const aberto = !painel.classList.contains("hidden");
+    painel.classList.toggle("hidden", aberto);
+    botao.setAttribute("aria-expanded", String(!aberto));
+
+    if (aberto) return;
+    marcarNotificacoesComoLidas();
+  });
+
+  document.addEventListener("click", (evento) => {
+    const clicouNoBotao = botao.contains(evento.target);
+    const clicouNoPainel = painel.contains(evento.target);
+    if (clicouNoBotao || clicouNoPainel) return;
+
+    painel.classList.add("hidden");
+    botao.setAttribute("aria-expanded", "false");
+  });
+}
+
+function mostrarNotificacaoFlutuante(registro) {
+  const existente = document.getElementById("toastNovoAgendamento");
+  if (existente) existente.remove();
+
+  const toast = document.createElement("div");
+  toast.id = "toastNovoAgendamento";
+  toast.setAttribute("role", "status");
+  toast.setAttribute("aria-live", "polite");
+  toast.style.position = "fixed";
+  toast.style.top = "20px";
+  toast.style.right = "20px";
+  toast.style.zIndex = "9999";
+  toast.style.maxWidth = "340px";
+  toast.style.background = "#111827";
+  toast.style.color = "#f9fafb";
+  toast.style.border = "1px solid rgba(255,255,255,.1)";
+  toast.style.borderRadius = "12px";
+  toast.style.boxShadow = "0 12px 30px rgba(0,0,0,.35)";
+  toast.style.padding = "12px 14px";
+  toast.style.fontFamily = "inherit";
+  toast.style.opacity = "0";
+  toast.style.transform = "translateY(-8px)";
+  toast.style.transition = "opacity .2s ease, transform .2s ease";
+
+  toast.innerHTML = `
+    <strong style="display:block;margin-bottom:4px;">Novo agendamento</strong>
+    <span style="font-size:14px;line-height:1.4;">${montarMensagemNotificacao(registro)}</span>
+  `;
+
+  document.body.appendChild(toast);
+
+  requestAnimationFrame(() => {
+    toast.style.opacity = "1";
+    toast.style.transform = "translateY(0)";
+  });
+
+  if (timeoutNotificacaoFlutuante) {
+    clearTimeout(timeoutNotificacaoFlutuante);
+  }
+
+  timeoutNotificacaoFlutuante = setTimeout(() => {
+    toast.style.opacity = "0";
+    toast.style.transform = "translateY(-8px)";
+    setTimeout(() => toast.remove(), 220);
+  }, DURACAO_NOTIFICACAO_FLUTUANTE_MS);
+>>>>>>> fix/agenda
 }
 
 function inicializarRealtime() {
@@ -362,7 +536,12 @@ function inicializarRealtime() {
       "postgres_changes",
       { event: "INSERT", schema: "public", table: "agendamentos" },
       (payload) => {
+<<<<<<< HEAD
         exibirToastNovoAgendamento(payload?.new);
+=======
+        adicionarNotificacao(payload?.new);
+        mostrarNotificacaoFlutuante(payload?.new);
+>>>>>>> fix/agenda
 
         // Pega o dia atualmente ativo na tela e re-busca os dados
         const cardAtivo = document.querySelector(".day-card.active");
@@ -388,11 +567,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   const dataHoje = getDataFormatada(0);
+  notificacoes = carregarNotificacoesLocal().slice(0, MAX_NOTIFICACOES);
 
   renderizarSliderDias(dataHoje); // monta os botões de dias
   await renderizarAgendamentos(dataHoje); // busca dados reais do banco
   inicializarSliderDias(); // ativa navegação por dia
   inicializarDragScroll(); // habilita arraste com mouse no desktop
   inicializarLogout(); // conecta o botão voltar ao signOut
+  inicializarPainelNotificacoes(); // inicializa sino e painel de notificações
   inicializarRealtime(); // escuta novos agendamentos ao vivo
 });

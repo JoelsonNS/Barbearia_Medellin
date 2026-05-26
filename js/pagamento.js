@@ -3,7 +3,11 @@
    Responsável por:
      • Ler os dados do agendamento salvos no localStorage
      • Preencher o resumo na tela
+<<<<<<< HEAD
      • Salvar o agendamento no Supabase ao finalizar
+=======
+     • Salvar agendamento e concluir fluxo de confirmação
+>>>>>>> fix/agenda
      • Limpar o localStorage e redirecionar para home
    ============================================================ */
 
@@ -164,7 +168,7 @@ async function salvarAgendamento(ag) {
  * Ao clicar em "Finalizar Agendamento":
  * - Salva o agendamento no Supabase
  * - Remove os dados pendentes do localStorage
- * - Redireciona para a página inicial
+ * - Redireciona para a página de confirmação
  */
 function inicializarBotaoFinalizar(ag) {
   const btn = document.getElementById("btnFinalizar");
