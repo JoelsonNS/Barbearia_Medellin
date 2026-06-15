@@ -9,19 +9,23 @@ if (nomeCliente) {
 /*== SUPABASE ==*/
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
+const supabaseConfigValida = Boolean(supabaseUrl && supabaseKey);
 
-if (!supabaseUrl || !supabaseKey) {
-  console.error("Variaveis do Supabase nao foram carregadas.", {
-    supabaseUrl,
-    supabaseKey: supabaseKey ? "[ok]" : undefined,
-  });
-  alert(
+function mostrarErroUsuario(mensagem) {
+  console.error(mensagem);
+  alert(mensagem);
+}
+
+if (!supabaseConfigValida) {
+  mostrarErroUsuario(
     "As configuracoes do Supabase nao foram carregadas. Verifique o arquivo .env e reinicie o servidor.",
   );
 }
 
 //Aqui liga o site ao banco de dados, usando a URL e a Chave.
-const db = supabase.createClient(supabaseUrl, supabaseKey);
+const db = supabaseConfigValida
+  ? supabase.createClient(supabaseUrl, supabaseKey)
+  : null;
 
 function formatarDataLocal(data) {
   const ano = data.getFullYear();
@@ -40,6 +44,13 @@ function horarioJaPassou(dataISO, hora) {
 //Verificar se o horario continua disponivel antes de ir para confirmacao
 async function verificarHorarioDisponivel(data, hora) {
   try {
+    if (!db) {
+      mostrarErroUsuario(
+        "Nao foi possivel conectar ao Supabase. Verifique a configuracao e tente novamente.",
+      );
+      return false;
+    }
+
     if (horarioJaPassou(data, hora)) {
       alert("Este horario ja passou. Escolha outro horario disponivel.");
       return false;
@@ -201,7 +212,10 @@ abrirCalendario.addEventListener("click", () => {
 /* === SELEÇÃO DE HORÁRIOS === */
 const horarios = document.querySelectorAll(".hora");
 
-function atualizarDisponibilidadeHorarios(dataSelecionada, horariosOcupados = []) {
+function atualizarDisponibilidadeHorarios(
+  dataSelecionada,
+  horariosOcupados = [],
+) {
   const ocupados = new Set(horariosOcupados);
   const horaAtiva = document.querySelector(".hora.ativo");
 
@@ -295,66 +309,86 @@ const confirmar = document.getElementById("confirmar");
 const nomeAtual = localStorage.getItem("nomeCliente");
 const telefoneAtual = localStorage.getItem("telefoneCliente");
 
-confirmar.addEventListener("click", async () => {
-  //Pegar serviço selecionado (exemplo: Corte, Barba etc)
-  const servicoSelecionado = document.querySelector(
-    ".card-servico.ativo h3",
-  )?.textContent;
-
-  //Pegar dia selecionado
-  const diaAtivo = document.querySelector(".dia.ativo");
-
-  //Pegar horário selecionado
-  const horaAtiva = document.querySelector(".hora.ativo");
-
-  //Verificação de segurança
-  if (!servicoSelecionado || !diaAtivo || !horaAtiva || !nomeAtual) {
-    alert(
-      "Por favor, selecione o serviço, o dia e o horário antes de confirmar.",
-    );
-    return;
-  }
-
-  //Transformar o dia em data real
-  const dataSelecionada = obterDataSelecionada();
-
-  //Pegar hora
-  const horaSelecionada = horaAtiva.textContent;
-
-  if (horarioJaPassou(dataSelecionada, horaSelecionada)) {
-    alert("Este horario ja passou. Escolha outro horario disponivel.");
-    carregarHorariosOcupados(dataSelecionada);
-    return;
-  }
-
-  const sucesso = await verificarHorarioDisponivel(
-    dataSelecionada,
-    horaSelecionada,
+if (!confirmar) {
+  console.error(
+    "Botao de confirmacao nao encontrado. Verifique servicos.html.",
   );
+} else {
+  confirmar.addEventListener("click", async () => {
+    try {
+      if (!db) {
+        mostrarErroUsuario(
+          "Impossivel confirmar: conexao com o Supabase nao esta disponivel.",
+        );
+        return;
+      }
 
-  if (!sucesso) return;
+      //Pegar serviço selecionado (exemplo: Corte, Barba etc)
+      const servicoSelecionado = document.querySelector(
+        ".card-servico.ativo h3",
+      )?.textContent;
 
-  /* =============================
-    SALVAR DADOS E IR PARA PAGAMENTO
-    Guarda os dados no localStorage para
-    a página de pagamento poder exibir
-    o resumo e gerar o QR Code Pix.
-    ============================= */
+      //Pegar dia selecionado
+      const diaAtivo = document.querySelector(".dia.ativo");
 
-  localStorage.setItem(
-    "agendamentoPendente",
-    JSON.stringify({
-      servico: servicoSelecionado,
-      data: dataSelecionada,
-      hora: horaSelecionada,
-      cliente: nomeAtual,
-      telefone: telefoneAtual,
-    }),
-  );
+      //Pegar horário selecionado
+      const horaAtiva = document.querySelector(".hora.ativo");
 
-  // Redireciona para a página de pagamento/finalização
-  window.location.href = "pagamento.html";
-});
+      //Verificação de segurança
+      if (!servicoSelecionado || !diaAtivo || !horaAtiva || !nomeAtual) {
+        alert(
+          "Por favor, selecione o serviço, o dia e o horário antes de confirmar.",
+        );
+        return;
+      }
+
+      //Transformar o dia em data real
+      const dataSelecionada = obterDataSelecionada();
+
+      //Pegar hora
+      const horaSelecionada = horaAtiva.textContent;
+
+      if (horarioJaPassou(dataSelecionada, horaSelecionada)) {
+        alert("Este horario ja passou. Escolha outro horario disponivel.");
+        carregarHorariosOcupados(dataSelecionada);
+        return;
+      }
+
+      const sucesso = await verificarHorarioDisponivel(
+        dataSelecionada,
+        horaSelecionada,
+      );
+
+      if (!sucesso) return;
+
+      /* =============================
+        SALVAR DADOS E IR PARA PAGAMENTO
+        Guarda os dados no localStorage para
+        a página de pagamento poder exibir
+        o resumo e gerar o QR Code Pix.
+        ============================= */
+
+      localStorage.setItem(
+        "agendamentoPendente",
+        JSON.stringify({
+          servico: servicoSelecionado,
+          data: dataSelecionada,
+          hora: horaSelecionada,
+          cliente: nomeAtual,
+          telefone: telefoneAtual,
+        }),
+      );
+
+      // Redireciona para a página de pagamento/finalização
+      window.location.href = "pagamento.html";
+    } catch (error) {
+      console.error("Erro ao confirmar agendamento:", error);
+      mostrarErroUsuario(
+        "Ocorreu um erro ao confirmar. Por favor, tente novamente.",
+      );
+    }
+  });
+}
 
 /* ==========================================
 REALTIME SUPABASE

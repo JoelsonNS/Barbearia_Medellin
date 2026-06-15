@@ -19,18 +19,22 @@ const PRECOS = {
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
+const supabaseConfigValida = Boolean(supabaseUrl && supabaseKey);
 
-if (!supabaseUrl || !supabaseKey) {
-  console.error("Variaveis do Supabase nao foram carregadas.", {
-    supabaseUrl,
-    supabaseKey: supabaseKey ? "[ok]" : undefined,
-  });
-  alert(
+function mostrarErroUsuario(mensagem) {
+  console.error(mensagem);
+  alert(mensagem);
+}
+
+if (!supabaseConfigValida) {
+  mostrarErroUsuario(
     "As configuracoes do Supabase nao foram carregadas. Verifique o arquivo .env e reinicie o servidor.",
   );
 }
 
-const db = supabase.createClient(supabaseUrl, supabaseKey);
+const db = supabaseConfigValida
+  ? supabase.createClient(supabaseUrl, supabaseKey)
+  : null;
 
 // ─── Leitura dos dados do agendamento ───────────────────────
 
@@ -108,6 +112,13 @@ function exibirErroAoSalvar(error) {
 
 async function salvarAgendamento(ag) {
   try {
+    if (!db) {
+      mostrarErroUsuario(
+        "Impossivel salvar agendamento: conexao com o Supabase nao esta disponivel.",
+      );
+      return false;
+    }
+
     if (horarioJaPassou(ag.data, ag.hora)) {
       alert("Este horario ja passou. Escolha outro horario disponivel.");
       return false;
