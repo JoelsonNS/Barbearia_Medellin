@@ -6,11 +6,11 @@ export default defineConfig({
     rollupOptions: {
       input: {
         index: resolve(__dirname, "index.html"),
-        login: resolve(__dirname, "login.html"),
-        servicos: resolve(__dirname, "servicos.html"),
-        agenda: resolve(__dirname, "agenda.html"),
-        pagamento: resolve(__dirname, "pagamento.html"),
-        confirmacao: resolve(__dirname, "confirmacao.html"),
+        login: resolve(__dirname, "pages/login.html"),
+        servicos: resolve(__dirname, "pages/servicos.html"),
+        agenda: resolve(__dirname, "pages/agenda.html"),
+        pagamento: resolve(__dirname, "pages/pagamento.html"),
+        confirmacao: resolve(__dirname, "pages/confirmacao.html"),
       },
     },
   },

@@ -211,6 +211,16 @@ abrirCalendario.addEventListener("click", () => {
 
 /* === SELEÇÃO DE HORÁRIOS === */
 const horarios = document.querySelectorAll(".hora");
+const totalEstimado = document.getElementById("total");
+
+function atualizarTotalServico() {
+  const servicoAtivo = document.querySelector(".card-servico.ativo");
+  const preco = Number(servicoAtivo?.dataset.preco ?? 0);
+
+  if (totalEstimado) {
+    totalEstimado.textContent = `R$ ${preco.toFixed(2).replace(".", ",")}`;
+  }
+}
 
 function atualizarDisponibilidadeHorarios(
   dataSelecionada,
@@ -244,6 +254,24 @@ function atualizarDisponibilidadeHorarios(
   }
 }
 
+seletorData.addEventListener("change", () => {
+  const dataEscolhida = seletorData.value;
+  if (!dataEscolhida) return;
+
+  const diaCorrespondente = document.querySelector(
+    `.dia[data-data="${dataEscolhida}"]`,
+  );
+
+  if (diaCorrespondente) {
+    document
+      .querySelectorAll(".dia")
+      .forEach((dia) => dia.classList.remove("ativo"));
+    diaCorrespondente.classList.add("ativo");
+    atualizarResumo();
+    carregarHorariosOcupados(dataEscolhida);
+  }
+});
+
 horarios.forEach((hora) => {
   hora.addEventListener("click", () => {
     if (hora.classList.contains("desabilitado") || hora.disabled) return;
@@ -271,6 +299,7 @@ servicos.forEach((servico) => {
 
     //adiciona no clicado
     servico.classList.add("ativo");
+    atualizarTotalServico();
   });
 });
 
@@ -300,6 +329,8 @@ window.addEventListener("DOMContentLoaded", () => {
   if (dataSelecionada) {
     carregarHorariosOcupados(dataSelecionada);
   }
+
+  atualizarTotalServico();
 });
 
 /*==BOTÃO CONFIRMAR AGENDAMENTO==*/

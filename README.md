@@ -1,104 +1,162 @@
 # Sistema de agendamento para barbearia
 
-## Corrigir erro ao confirmar agendamento
+## Visão geral
 
-Se ao clicar em **Confirmar Agendamento** aparecer o erro:
+Projeto front-end estático em Vite, com páginas de agendamento, login e confirmação.
+A estrutura foi organizada para manter:
+
+- separação clara entre páginas, estilos, scripts e ativos;
+- navegação simples sem dependências desnecessárias;
+- backend Supabase isolado em `supabase/`.
+
+## Estrutura do projeto
+
+- `pages/`
+  - `pages/index.html`, `pages/login.html`, `pages/servicos.html`, `pages/agenda.html`, `pages/pagamento.html`, `pages/confirmacao.html`
+  - páginas principais do site.
+- `styles/`
+  - CSS separados por página e `main.css` global.
+- `scripts/`
+  - JavaScript separados por página.
+- `public/assets/favicon/`
+  - favicon e ícones estáticos.
+- `public/assets/img/`
+  - imagens do site e fotos dos serviços.
+- `supabase/functions/`
+  - funções serverless ou lógica de backend.
+- `supabase/migrations/`
+  - scripts de migração de banco de dados.
+- `.env.example`
+  - exemplo de variáveis de ambiente.
+- `package.json` e `vite.config.js`
+  - configuração de build e scripts de desenvolvimento.
+
+### Exemplo de árvore de diretórios
+
+```
+/pages
+  index.html
+  login.html
+  servicos.html
+  agenda.html
+  pagamento.html
+  confirmacao.html
+/styles
+  main.css
+  index.css
+  login.css
+  servicos.css
+  agenda.css
+  pagamento.css
+  confirmacao.css
+/scripts
+  index.js
+  login.js
+  servicos.js
+  agenda.js
+  pagamento.js
+  confirmacao.js
+/public/assets/favicon
+  favicon-32x32.png
+  favicon.ico
+/public/assets/img
+  corte_1.jpeg
+  corte_2.jpeg
+  corte_3.jpeg
+  ...
+/supabase/functions
+/supabase/migrations
+.env.example
+package.json
+vite.config.js
+```
+
+## Como usar
+
+1. Instalar dependências:
+
+```bash
+npm install
+```
+
+2. Rodar em desenvolvimento:
+
+```bash
+npm run dev
+```
+
+3. Build de produção:
+
+```bash
+npm run build
+```
+
+4. Preview do build:
+
+```bash
+npm run preview
+```
+
+## Padrões de organização
+
+- páginas HTML ficam em `pages/`
+- arquivos de estilo ficam em `styles/`
+- scripts de página ficam em `scripts/`
+- imagens e favicon ficam em `public/assets/`
+- código de backend e migrações continuam em `supabase/`
+
+Essa organização facilita manutenção, revisão de código e futuras evoluções.
+
+## Nota sobre Supabase
+
+A função `supabase/functions/enviar-lembrete` está preservada para possível uso futuro.
+Hoje o fluxo principal de lembrete é feito pelo cliente na tela de confirmação, via:
+
+- `scripts/confirmacao.js`
+  - Geração de `.ics` no iPhone/iPad;
+  - abertura de evento no Google Calendar em Android/desktop.
+
+## Correção comum
+
+Se aparecer o erro:
 
 ```text
 Could not find the 'lembrete_enviado' column of 'agendamentos' in the schema cache
 ```
 
-significa que o JavaScript esta tentando salvar um campo chamado
-`lembrete_enviado`, mas essa coluna ainda nao existe na tabela
-`agendamentos` do Supabase.
+significa que a tabela `agendamentos` não possui a coluna `lembrete_enviado`.
 
 Para corrigir:
 
-1. Abra o Supabase Dashboard do projeto.
-2. Va em **SQL Editor**.
-3. Execute o arquivo `supabase/migrations/20260515_fix_agendamentos_lembrete.sql`.
-4. Recarregue a pagina `servicos.html` e tente confirmar novamente.
+1. Abra o Supabase Dashboard.
+2. Vá em **SQL Editor**.
+3. Execute `supabase/migrations/20260515_fix_agendamentos_lembrete.sql`.
+4. Recarregue `servicos.html`.
 
-Esse campo foi criado para a estrategia anterior de lembrete por WhatsApp.
-No fluxo atual, o lembrete principal e feito pelo Google Calendar ou Apple
-Calendar na tela de confirmacao.
+## Fluxo de branches
 
-## Lembretes de agendamento
+- `main`: branch principal e estável.
+- `feature/*`: desenvolvimento de novas funcionalidades.
+- `fix/*`: correções de bugs.
+- `hotfix/*`: correções urgentes.
 
-### Estrategia atual: calendario do cliente
+Regras básicas:
 
-Atualmente, o projeto usa a tela `confirmacao.html` para oferecer ao cliente
-um botao de adicionar o agendamento ao calendario.
+- desenvolver em branch própria;
+- commits pequenos e claros;
+- testar antes de integrar;
+- não comitar direto em `main`.
 
-O comportamento esta implementado em `js/confirmacao.js`:
+## Deploy
 
-- Em iPhone/iPad, o sistema gera um arquivo `.ics`, que pode ser aberto no
-  Apple Calendar.
-- Em Android ou desktop, o sistema abre o Google Calendar com o evento
-  preenchido.
-- O evento leva o titulo `✂️ Meu Corte na Medellin Barbearia`.
-- O arquivo `.ics` inclui um aviso de 30 minutos antes do horario.
+Para orientação de publicação e validação, veja `deploy.md`.
 
-Com essa estrategia, nao e necessario usar uma API de WhatsApp para lembrar o
-cliente neste momento.
+## Checklist de deploy
 
-### Funcao preservada para uso futuro
-
-A pasta `supabase/functions/enviar-lembrete` esta preservada no projeto, mas
-nao e usada no fluxo atual.
-
-Ela foi criada para uma estrategia anterior: enviar lembretes automaticamente
-por WhatsApp usando uma API externa, como Z-API, Evolution API ou outra
-integracao semelhante.
-
-Enquanto essa funcionalidade nao for retomada, nao e necessario:
-
-- publicar a funcao `enviar-lembrete` no Supabase;
-- configurar secrets da Edge Function;
-- criar cron job para executar a funcao;
-- contratar ou instalar uma API de WhatsApp.
-
-Essa pasta pode continuar no repositorio como base para uma futura evolucao,
-caso o projeto volte a precisar de lembretes automaticos pelo servidor.
-
-## Fluxo de Branches
-
-Atualmente o projeto utiliza um fluxo simples com a `main` como branch principal e branches separadas para cada funcionalidade ou correção.
-
-### Regras
-
-- Desenvolver sempre em uma branch própria
-- Fazer commits pequenos e descritivos
-- Testar antes de integrar
-- Nao comitar direto na `main`
-
-### Estrutura atual
-
-- `main`: versao principal e estavel do projeto
-- `feature/*`: desenvolvimento de novas funcionalidades
-- `fix/*`: correcao de bugs
-- `hotfix/*`: correcao urgente
-
-### Padrao de nomes das branches
-
-- `feature/STAYPROJ-102`: branch para nova funcionalidade vinculada a uma task
-- `fix/nome-do-ajuste`: branch para correcao comum
-- `hotfix/nome-do-ajuste`: branch para correcao urgente
-
-### Exemplos
-
-- `feature/login`
-- `feature/agenda`
-- `feature/STAYPROJ-102`
-- `fix/correcao-login`
-- `hotfix/erro-agendamento`
-
-### Fluxo de trabalho
-
-1. Criar uma branch a partir da `main`
-2. Desenvolver a funcionalidade ou correcao na branch criada
-3. Fazer commits pequenos e com mensagens claras
-4. Testar antes de integrar
-5. Fazer merge na `main` somente quando estiver estavel
-
-> Observacao: por enquanto o projeto nao utiliza as branches `develop` e `homolog`. Se elas forem criadas no futuro, este fluxo pode ser expandido.
+1. Confirmar que todos os arquivos estão no repositório e sem arquivos temporários.
+2. Garantir que `public/assets/` contém o favicon e as imagens usadas pelo site.
+3. Rodar `npm run build` e verificar se não ocorrem erros.
+4. Testar o site local de preview com `npm run preview`.
+5. Validar URLs de favicon, imagens e scripts nas páginas principais.
+6. Atualizar `supabase/migrations/` no ambiente de banco se necessário.
+7. Usar `git push` na branch correta e abrir PR para revisão.

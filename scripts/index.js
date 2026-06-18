@@ -118,6 +118,8 @@ verificarStatusBarbearia();
 //verifica automáticamente o status de aberto/fechado a cada minuto
 setInterval(verificarStatusBarbearia, 60000);
 
+console.log("scripts/index.js carregado");
+
 /*== MODAL ==*/
 
 const fotos = document.querySelectorAll(".foto");
@@ -171,37 +173,56 @@ anterior.addEventListener("click", () => {
 /*== SALVAR NOME DO CLIENTE E IR PARA PÁGINA SERVIÇOS == */
 
 const form = document.getElementById("formNome");
-
-//deixar a primeira leat de cada nome Maiúscula
 const inputNome = document.getElementById("inputNomeCliente");
+const inputTelefone = document.getElementById("inputTelefone");
 
-inputNome.addEventListener("input", () => {
-  let valor = inputNome.value;
+if (!form) console.warn("formNome não encontrado no DOM");
+if (!inputNome) console.warn("inputNomeCliente não encontrado no DOM");
+if (!inputTelefone) console.warn("inputTelefone não encontrado no DOM");
 
-  inputNome.value = valor.replace(/\b\w/g, (letra) => letra.toUpperCase());
-});
+if (inputNome) {
+  inputNome.addEventListener("input", () => {
+    let valor = inputNome.value;
+    inputNome.value = valor.replace(/\b\w/g, (letra) => letra.toUpperCase());
+  });
+}
 
-form.addEventListener("submit", (e) => {
-  e.preventDefault();
+if (form) {
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    console.log("formNome: submit disparado");
 
-  const nome = document.getElementById("inputNomeCliente").value;
-  const telefone = document.getElementById("inputTelefone").value;
+    const nome = inputNome
+      ? inputNome.value
+      : document.getElementById("inputNomeCliente")?.value;
+    const telefone = inputTelefone
+      ? inputTelefone.value
+      : document.getElementById("inputTelefone")?.value;
 
-  if (!nome) {
-    alert("Digite seu nome");
-    return;
-  }
+    console.log("valores:", { nome, telefone });
 
-  if (!telefone) {
-    alert("Digite seu WhatsApp para receber o lembrete");
-    return;
-  }
+    if (!nome) {
+      alert("Digite seu nome");
+      return;
+    }
 
-  localStorage.setItem("nomeCliente", nome);
-  localStorage.setItem("telefoneCliente", telefone);
+    if (!telefone) {
+      alert("Digite seu WhatsApp para receber o lembrete");
+      return;
+    }
 
-  window.location.href = "servicos.html";
-});
+    try {
+      localStorage.setItem("nomeCliente", nome);
+      localStorage.setItem("telefoneCliente", telefone);
+    } catch (err) {
+      console.warn("Erro ao acessar localStorage", err);
+    }
+
+    // navegação para página de serviços
+    console.log("redirecionando para /pages/servicos.html");
+    window.location.href = "/pages/servicos.html";
+  });
+}
 
 /*==FECHAR POPUP==*/
 const fecharClickFora = document.getElementById("popupNome");
