@@ -1,9 +1,32 @@
 /*==MOSTRAR NOME DO CLIENTE==*/
 const nomeCliente = localStorage.getItem("nomeCliente");
+const telefoneCliente = localStorage.getItem("telefoneCliente");
+
+function redirecionarParaIndex() {
+  alert(
+    "Por favor, preencha seu nome e telefone antes de agendar. Você será redirecionado para a página inicial.",
+  );
+  window.location.href = "/index.html";
+}
+
+function validarClienteLocalStorage() {
+  if (!nomeCliente || !telefoneCliente) {
+    redirecionarParaIndex();
+    return false;
+  }
+  return true;
+}
 
 if (nomeCliente) {
   document.getElementById("boasVindas").innerHTML =
     `Olá, <span class="nome-cliente">${nomeCliente}</span>! Seja bem vindo.<br><br>Escolha seu serviço, data e horário:`;
+}
+
+if (!validarClienteLocalStorage()) {
+  // Se o cliente não estiver no localStorage, não continue com esta página.
+  throw new Error(
+    "Cliente não encontrado no localStorage. Redirecionando para index.",
+  );
 }
 
 /*== SUPABASE ==*/
